@@ -1,0 +1,2189 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Dedalus API",
+    "description": "MCP gateway for AI agents. Mix-and-match any model with any tool from our marketplace.\n\n## Authentication\nUse Bearer token or X-API-Key header authentication:\n```\nAuthorization: Bearer your-api-key-here\n```\n```\nx-api-key: your-api-key-here\n```\n\n## Available Endpoints\n- **GET /v1/models**: list available models\n- **POST /v1/chat/completions**: Chat completions with MCP tools\n- **GET /health**: Service health check",
+    "version": "0.1.0a6"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health Check",
+        "description": "Simple health check.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/models": {
+      "get": {
+        "tags": [
+          "v1",
+          "v1"
+        ],
+        "summary": "List Models",
+        "description": "List available models.\n\nReturns a list of available models from all configured providers.\nModels are filtered based on provider availability and API key configuration.\nOnly models from providers with valid API keys are returned.\n\nArgs:\n    user: Authenticated user obtained from API key validation\n\nReturns:\n    ModelsResponse: Object containing list of available models\n\nRaises:\n    HTTPException:\n        - 401 if authentication fails\n        - 500 if internal error occurs during model listing\n\nRequires:\n    Valid API key with 'read' scope permission\n\nExample:\n    ```python\n    import dedalus_labs\n\n    client = dedalus_labs.Client(api_key=\"your-api-key\")\n    models = client.models.list()\n\n    for model in models.data:\n        print(f\"Model: {model.id} (Owner: {model.owned_by})\")\n    ```\n\n    Response:\n    ```json\n    {\n        \"object\": \"list\",\n        \"data\": [\n            {\n                \"id\": \"openai/gpt-4\",\n                \"object\": \"model\",\n                \"owned_by\": \"openai\"\n            },\n            {\n                \"id\": \"anthropic/claude-3-5-sonnet-20241022\",\n                \"object\": \"model\",\n                \"owned_by\": \"anthropic\"\n            }\n        ]\n    }\n    ```",
+        "operationId": "list_models_v1_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/models/{model_id}": {
+      "get": {
+        "tags": [
+          "v1",
+          "v1"
+        ],
+        "summary": "Get Model",
+        "description": "Get information about a specific model.\n\nReturns detailed information about a specific model by ID.\nThe model must be available to your API key's configured providers.\n\nArgs:\n    model_id: The ID of the model to retrieve (e.g., 'openai/gpt-4', 'anthropic/claude-3-5-sonnet-20241022')\n    user: Authenticated user obtained from API key validation\n\nReturns:\n    DedalusModel: Information about the requested model\n\nRaises:\n    HTTPException:\n        - 401 if authentication fails\n        - 404 if model not found or not accessible with current API key\n        - 500 if internal error occurs\n\nRequires:\n    Valid API key with 'read' scope permission\n\nExample:\n    ```python\n    import dedalus_labs\n\n    client = dedalus_labs.Client(api_key=\"your-api-key\")\n    model = client.models.retrieve(\"openai/gpt-4\")\n\n    print(f\"Model: {model.id}\")\n    print(f\"Owner: {model.owned_by}\")\n    ```\n\n    Response:\n    ```json\n    {\n        \"id\": \"openai/gpt-4\",\n        \"object\": \"model\",\n        \"created\": 1687882411,\n        \"owned_by\": \"openai\"\n    }\n    ```",
+        "operationId": "get_model_v1_models__model_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DedalusModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/chat/completions": {
+      "post": {
+        "tags": [
+          "v1",
+          "v1"
+        ],
+        "summary": "Create",
+        "description": "Create a chat completion using the Agent framework.\n\nThis endpoint provides a vendor-agnostic chat completion API that works with\n100+ LLM providers via the Agent framework. It supports both single and\nmulti-model routing, client-side and server-side tool execution, and\nintegration with MCP (Model Context Protocol) servers.\n\nFeatures:\n    - Cross-vendor compatibility (OpenAI, Anthropic, Cohere, etc.)\n    - Multi-model routing with intelligent agentic handoffs\n    - Client-side tool execution (tools returned as JSON)\n    - Server-side MCP tool execution with automatic billing\n    - Streaming and non-streaming responses\n    - Advanced agent attributes for routing decisions\n    - Automatic usage tracking and billing\n\nArgs:\n    request: Chat completion request with messages, model, and configuration\n    http_request: FastAPI request object for accessing headers and state\n    background_tasks: FastAPI background tasks for async billing operations\n    user: Authenticated user with validated API key and sufficient balance\n\nReturns:\n    ChatCompletion: OpenAI-compatible completion response with usage data\n\nRaises:\n    HTTPException:\n        - 401 if authentication fails or insufficient balance\n        - 400 if request validation fails\n        - 500 if internal processing error occurs\n\nBilling:\n    - Token usage billed automatically based on model pricing\n    - MCP tool calls billed separately using credits system\n    - Streaming responses billed after completion via background task\n\nExample:\n    Basic chat completion:\n    ```python\n    from dedalus_labs import Dedalus\n\n    client = Dedalus(api_key=\"your-api-key\")\n\n    completion = client.chat.completions.create(\n        model=\"openai/gpt-5\",\n        messages=[{\"role\": \"user\", \"content\": \"Hello, how are you?\"}],\n    )\n\n    print(completion.choices[0].message.content)\n    ```\n\n    With tools and MCP servers:\n    ```python\n    completion = client.chat.completions.create(\n        model=\"openai/gpt-5\",\n        messages=[{\"role\": \"user\", \"content\": \"Search for recent AI news\"}],\n        tools=[\n            {\n                \"type\": \"function\",\n                \"function\": {\n                    \"name\": \"search_web\",\n                    \"description\": \"Search the web for information\",\n                },\n            }\n        ],\n        mcp_servers=[\"dedalus-labs/brave-search\"],\n    )\n    ```\n\n    Multi-model routing:\n    ```python\n    completion = client.chat.completions.create(\n        model=[\n            \"openai/gpt-4o-mini\",\n            \"openai/gpt-5\",\n            \"anthropic/claude-sonnet-4-20250514\",\n        ],\n        messages=[{\"role\": \"user\", \"content\": \"Analyze this complex data\"}],\n        agent_attributes={\"complexity\": 0.8, \"accuracy\": 0.9},\n    )\n    ```\n\n    Streaming response:\n    ```python\n    stream = client.chat.completions.create(\n        model=\"openai/gpt-5\",\n        messages=[{\"role\": \"user\", \"content\": \"Tell me a story\"}],\n        stream=True,\n    )\n\n    for chunk in stream:\n        if chunk.choices[0].delta.content:\n            print(chunk.choices[0].delta.content, end=\"\")\n    ```",
+        "operationId": "create_v1_chat_completions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatCompletionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "JSON or SSE stream of ChatCompletionChunk events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatCompletionChunk"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatCompletionChunk"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RootResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Annotation": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "url_citation",
+            "title": "Type"
+          },
+          "url_citation": {
+            "$ref": "#/components/schemas/AnnotationURLCitation"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "type",
+          "url_citation"
+        ],
+        "title": "Annotation"
+      },
+      "AnnotationURLCitation": {
+        "properties": {
+          "end_index": {
+            "type": "integer",
+            "title": "End Index"
+          },
+          "start_index": {
+            "type": "integer",
+            "title": "Start Index"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "end_index",
+          "start_index",
+          "title",
+          "url"
+        ],
+        "title": "AnnotationURLCitation"
+      },
+      "ChatCompletion": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier for the chat completion"
+          },
+          "object": {
+            "type": "string",
+            "const": "chat.completion",
+            "title": "Object",
+            "description": "Object type, always 'chat.completion'",
+            "default": "chat.completion"
+          },
+          "created": {
+            "type": "integer",
+            "title": "Created",
+            "description": "Unix timestamp when the completion was created"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "description": "ID of the model used for the completion"
+          },
+          "choices": {
+            "items": {
+              "$ref": "#/components/schemas/Choice"
+            },
+            "type": "array",
+            "title": "Choices",
+            "description": "List of completion choices"
+          },
+          "usage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompletionUsage"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Usage statistics for the completion"
+          },
+          "system_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System Fingerprint",
+            "description": "System fingerprint that represents the backend configuration"
+          },
+          "service_tier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "default",
+                  "flex",
+                  "scale",
+                  "priority"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Tier",
+            "description": "Service tier used for processing the request"
+          },
+          "tools_executed": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tools Executed",
+            "description": "List of tool names that were executed server-side (e.g., MCP tools). Only present when tools were executed on the server rather than returned for client-side execution."
+          },
+          "mcp_server_errors": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mcp Server Errors",
+            "description": "Information about MCP server failures, if any occurred during the request. Contains details about which servers failed and why, along with recommendations for the user. Only present when MCP server failures occurred."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "created",
+          "model",
+          "choices"
+        ],
+        "title": "ChatCompletion",
+        "description": "Chat completion response for Dedalus API.\n\nOpenAI-compatible chat completion response with Dedalus extensions.\nMaintains full compatibility with OpenAI API while providing additional\nfeatures like server-side tool execution tracking and MCP error reporting.",
+        "example": {
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "message": {
+                "content": "The next Warriors game is tomorrow at 7:30 PM.",
+                "role": "assistant"
+              }
+            }
+          ],
+          "created": 1677652288,
+          "id": "chatcmpl-123",
+          "model": "gpt-4o-mini",
+          "object": "chat.completion",
+          "tools_executed": [
+            "search_events",
+            "get_event_details"
+          ],
+          "usage": {
+            "completion_tokens": 12,
+            "prompt_tokens": 9,
+            "total_tokens": 21
+          }
+        }
+      },
+      "ChatCompletionAudio": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "data": {
+            "type": "string",
+            "title": "Data"
+          },
+          "expires_at": {
+            "type": "integer",
+            "title": "Expires At"
+          },
+          "transcript": {
+            "type": "string",
+            "title": "Transcript"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "id",
+          "data",
+          "expires_at",
+          "transcript"
+        ],
+        "title": "ChatCompletionAudio"
+      },
+      "ChatCompletionChunk": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier for the chat completion"
+          },
+          "object": {
+            "type": "string",
+            "const": "chat.completion.chunk",
+            "title": "Object",
+            "description": "Object type, always 'chat.completion.chunk'",
+            "default": "chat.completion.chunk"
+          },
+          "created": {
+            "type": "integer",
+            "title": "Created",
+            "description": "Unix timestamp when the chunk was created"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "description": "ID of the model used for the completion"
+          },
+          "choices": {
+            "items": {
+              "$ref": "#/components/schemas/ChunkChoice"
+            },
+            "type": "array",
+            "title": "Choices",
+            "description": "List of completion choice chunks"
+          },
+          "usage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompletionUsage"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Usage statistics (only in final chunk with stream_options.include_usage=true)"
+          },
+          "system_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System Fingerprint",
+            "description": "System fingerprint representing backend configuration"
+          },
+          "service_tier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "default",
+                  "flex",
+                  "scale",
+                  "priority"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Tier",
+            "description": "Service tier used for processing the request"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "created",
+          "model",
+          "choices"
+        ],
+        "title": "ChatCompletionChunk",
+        "description": "Server-Sent Event streaming format for chat completions",
+        "example": {
+          "choices": [
+            {
+              "delta": {
+                "content": "Hello"
+              },
+              "index": 0
+            }
+          ],
+          "created": 1677652288,
+          "id": "chatcmpl-123",
+          "model": "gpt-4",
+          "object": "chat.completion.chunk"
+        }
+      },
+      "ChatCompletionMessage": {
+        "properties": {
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          },
+          "refusal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refusal"
+          },
+          "role": {
+            "type": "string",
+            "const": "assistant",
+            "title": "Role"
+          },
+          "annotations": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Annotation"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annotations"
+          },
+          "audio": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChatCompletionAudio"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "function_call": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FunctionCall"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tool_calls": {
+            "anyOf": [
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ChatCompletionMessageFunctionToolCall"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ChatCompletionMessageCustomToolCall"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Calls"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "role"
+        ],
+        "title": "ChatCompletionMessage"
+      },
+      "ChatCompletionMessageCustomToolCall": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "custom": {
+            "$ref": "#/components/schemas/Custom"
+          },
+          "type": {
+            "type": "string",
+            "const": "custom",
+            "title": "Type"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "id",
+          "custom",
+          "type"
+        ],
+        "title": "ChatCompletionMessageCustomToolCall"
+      },
+      "ChatCompletionMessageFunctionToolCall": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "function": {
+            "$ref": "#/components/schemas/Function"
+          },
+          "type": {
+            "type": "string",
+            "const": "function",
+            "title": "Type"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "id",
+          "function",
+          "type"
+        ],
+        "title": "ChatCompletionMessageFunctionToolCall"
+      },
+      "ChatCompletionRequest": {
+        "properties": {
+          "messages": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Messages",
+            "description": "Messages to the model - accepts either 'messages' (OpenAI) or 'input' (Dedalus). Supports role/content structure and multimodal content arrays.",
+            "examples": [
+              [
+                {
+                  "content": "Hello, how are you?",
+                  "role": "user"
+                }
+              ],
+              [
+                {
+                  "content": "You are a helpful assistant.",
+                  "role": "system"
+                },
+                {
+                  "content": "What is the weather like?",
+                  "role": "user"
+                }
+              ]
+            ]
+          },
+          "model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DedalusModelChoice"
+              },
+              {
+                "$ref": "#/components/schemas/Models"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "Model(s) to use for completion. Can be a single model ID, a DedalusModel object, or a list for multi-model routing. Single model: 'openai/gpt-4', 'anthropic/claude-3-5-sonnet-20241022', 'openai/gpt-4o-mini', or a DedalusModel instance. Multi-model routing: ['openai/gpt-4o-mini', 'openai/gpt-4', 'anthropic/claude-3-5-sonnet'] or list of DedalusModel objects - agent will choose optimal model based on task complexity.",
+            "examples": [
+              "openai/gpt-4",
+              [
+                "openai/gpt-4o-mini",
+                "openai/gpt-4",
+                "anthropic/claude-3-5-sonnet"
+              ],
+              {
+                "cost": 0.8,
+                "intelligence": 0.9,
+                "max_tokens": 1000,
+                "name": "openai/gpt-4",
+                "temperature": 0.7
+              },
+              [
+                "openai/gpt-4o-mini",
+                {
+                  "creativity": 0.8,
+                  "name": "openai/gpt-4",
+                  "speed": 0.9,
+                  "temperature": 0.5
+                }
+              ]
+            ]
+          },
+          "tools": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tools",
+            "description": "list of tools available to the model in OpenAI function calling format. Tools are executed client-side and returned as JSON for the application to handle. Use 'mcp_servers' for server-side tool execution.",
+            "examples": [
+              [
+                {
+                  "function": {
+                    "description": "Get current weather for a location",
+                    "name": "get_weather",
+                    "parameters": {
+                      "properties": {
+                        "location": {
+                          "description": "City name",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "location"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "type": "function"
+                }
+              ]
+            ]
+          },
+          "tool_choice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Choice",
+            "description": "Controls which tool is called by the model. Options: 'auto' (default), 'none', 'required', or specific tool name. Can also be a dict specifying a particular tool.",
+            "examples": [
+              "auto",
+              "none",
+              "required",
+              {
+                "function": {
+                  "name": "get_weather"
+                },
+                "type": "function"
+              }
+            ]
+          },
+          "mcp_servers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mcp Servers",
+            "description": "MCP (Model Context Protocol) server addresses to make available for server-side tool execution. Can be URLs (e.g., 'https://mcp.example.com') or slugs (e.g., 'dedalus-labs/brave-search'). MCP tools are executed server-side and billed separately.",
+            "examples": [
+              [
+                "dedalus-labs/brave-search",
+                "dedalus-labs/github-api"
+              ]
+            ]
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 2.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature",
+            "description": "Sampling temperature (0 to 2). Higher values make output more random, lower values make it more focused and deterministic. 0 = deterministic, 1 = balanced, 2 = very creative.",
+            "examples": [
+              0.0,
+              0.7,
+              1.0
+            ]
+          },
+          "top_p": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top P",
+            "description": "Nucleus sampling parameter (0 to 1). Alternative to temperature. 0.1 = only top 10% probability mass, 1.0 = consider all tokens.",
+            "examples": [
+              0.1,
+              0.9,
+              1.0
+            ]
+          },
+          "n": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 128.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N",
+            "description": "Number of completions to generate. Note: only n=1 is currently supported.",
+            "examples": [
+              1
+            ]
+          },
+          "stream": {
+            "type": "boolean",
+            "title": "Stream",
+            "description": "Whether to stream back partial message deltas as Server-Sent Events. When true, partial message deltas will be sent as OpenAI-compatible chunks.",
+            "default": false,
+            "examples": [
+              true,
+              false
+            ]
+          },
+          "stop": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stop",
+            "description": "Up to 4 sequences where the API will stop generating further tokens. The model will stop as soon as it encounters any of these sequences.",
+            "examples": [
+              [
+                "\\n",
+                "END"
+              ],
+              [
+                "Human:",
+                "Assistant:"
+              ]
+            ]
+          },
+          "max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Tokens",
+            "description": "Maximum number of tokens to generate in the completion. Does not include tokens in the input messages.",
+            "examples": [
+              100,
+              1000,
+              4000
+            ]
+          },
+          "presence_penalty": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 2.0,
+                "minimum": -2.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Presence Penalty",
+            "description": "Presence penalty (-2 to 2). Positive values penalize new tokens based on whether they appear in the text so far, encouraging the model to talk about new topics.",
+            "examples": [
+              -0.5,
+              0.0,
+              0.6
+            ]
+          },
+          "frequency_penalty": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 2.0,
+                "minimum": -2.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency Penalty",
+            "description": "Frequency penalty (-2 to 2). Positive values penalize new tokens based on their existing frequency in the text so far, decreasing likelihood of repeated phrases.",
+            "examples": [
+              -0.5,
+              0.0,
+              0.6
+            ]
+          },
+          "logit_bias": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logit Bias",
+            "description": "Modify likelihood of specified tokens appearing in the completion. Maps token IDs (as strings) to bias values (-100 to 100). -100 = completely ban token, +100 = strongly favor token.",
+            "examples": [
+              {
+                "50256": -100
+              },
+              {
+                "1234": 10,
+                "5678": -50
+              }
+            ]
+          },
+          "user": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User",
+            "description": "Unique identifier representing your end-user. Used for monitoring and abuse detection. Should be consistent across requests from the same user.",
+            "examples": [
+              "user-123",
+              "customer@example.com"
+            ]
+          },
+          "guardrails": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guardrails",
+            "description": "Guardrails to apply to the agent for input/output validation and safety checks. Reserved for future use - guardrails configuration format not yet finalized."
+          },
+          "handoff_config": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Handoff Config",
+            "description": "Configuration for multi-model handoffs and agent orchestration. Reserved for future use - handoff configuration format not yet finalized."
+          },
+          "model_attributes": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "additionalProperties": {
+                    "type": "number"
+                  },
+                  "type": "object"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Attributes",
+            "description": "Attributes for individual models used in routing decisions during multi-model execution. Format: {'model_name': {'attribute': value}}, where values are 0.0-1.0. Common attributes: 'intelligence', 'speed', 'cost', 'creativity', 'accuracy'. Used by agent to select optimal model based on task requirements.",
+            "examples": [
+              {
+                "anthropic/claude-3-5-sonnet": {
+                  "cost": 0.7,
+                  "creativity": 0.8,
+                  "intelligence": 0.95
+                },
+                "openai/gpt-4": {
+                  "cost": 0.8,
+                  "intelligence": 0.9,
+                  "speed": 0.6
+                },
+                "openai/gpt-4o-mini": {
+                  "cost": 0.2,
+                  "intelligence": 0.7,
+                  "speed": 0.9
+                }
+              }
+            ]
+          },
+          "agent_attributes": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Attributes",
+            "description": "Attributes for the agent itself, influencing behavior and model selection. Format: {'attribute': value}, where values are 0.0-1.0. Common attributes: 'complexity', 'accuracy', 'efficiency', 'creativity', 'friendliness'. Higher values indicate stronger preference for that characteristic.",
+            "examples": [
+              {
+                "accuracy": 0.9,
+                "complexity": 0.8,
+                "efficiency": 0.7
+              },
+              {
+                "creativity": 0.9,
+                "friendliness": 0.8
+              }
+            ]
+          },
+          "max_turns": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Turns",
+            "description": "Maximum number of turns for agent execution before terminating (default: 10). Each turn represents one model inference cycle. Higher values allow more complex reasoning but increase cost and latency.",
+            "examples": [
+              5,
+              10,
+              20
+            ]
+          }
+        },
+        "type": "object",
+        "title": "ChatCompletionRequest",
+        "description": "Request model for chat completions.\n\nValidates incoming chat requests with support for multimodality,\nmulti-model routing, and agent-enhanced features. Compatible with\nOpenAI API format while extending functionality for advanced use cases.\n\nThis model supports both the 'messages' field and the 'input' field\nfor maximum compatibility. The 'input' field can handle various\nmodalities beyond text messages.\n\nKey Features:\n    - Multi-model routing with intelligent handoffs\n    - MCP (Model Context Protocol) server integration\n    - Advanced agent attributes for routing decisions\n    - Client-side and server-side tool execution\n    - Streaming and non-streaming responses\n    - Automatic usage tracking and billing\n\nExamples:\n    Basic chat completion:\n    ```python\n    request = ChatCompletionRequest(\n        model=\"openai/gpt-4\",\n        messages=[{\"role\": \"user\", \"content\": \"Hello, how are you?\"}],\n    )\n    ```\n\n    Multi-model routing with attributes:\n    ```python\n    request = ChatCompletionRequest(\n        model=[\"openai/gpt-4o-mini\", \"openai/gpt-4\", \"anthropic/claude-3-5-sonnet\"],\n        messages=[{\"role\": \"user\", \"content\": \"Analyze this complex problem\"}],\n        agent_attributes={\"complexity\": 0.8, \"accuracy\": 0.9},\n        model_attributes={\n            \"gpt-4\": {\"intelligence\": 0.9, \"cost\": 0.8},\n            \"claude-3-5-sonnet\": {\"intelligence\": 0.95, \"cost\": 0.7},\n        },\n    )\n    ```\n\n    With tools and MCP servers:\n    ```python\n    request = ChatCompletionRequest(\n        model=\"openai/gpt-5\",\n        messages=[{\"role\": \"user\", \"content\": \"Search for AI news\"}],\n        tools=[\n            {\n                \"type\": \"function\",\n                \"function\": {\n                    \"name\": \"search_web\",\n                    \"description\": \"Search the web\",\n                },\n            }\n        ],\n        mcp_servers=[\"dedalus-labs/brave-search\"],\n        temperature=0.7,\n        max_tokens=1000,\n    )\n    ```"
+      },
+      "ChatCompletionTokenLogprob": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token",
+            "description": "The token"
+          },
+          "bytes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bytes",
+            "description": "Bytes representation of the token"
+          },
+          "logprob": {
+            "type": "number",
+            "title": "Logprob",
+            "description": "Log probability of this token"
+          },
+          "top_logprobs": {
+            "items": {
+              "$ref": "#/components/schemas/TopLogprob"
+            },
+            "type": "array",
+            "title": "Top Logprobs",
+            "description": "List of most likely tokens and their log probabilities"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "logprob",
+          "top_logprobs"
+        ],
+        "title": "ChatCompletionTokenLogprob",
+        "description": "Token log probability information."
+      },
+      "Choice": {
+        "properties": {
+          "finish_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "stop",
+                  "length",
+                  "tool_calls",
+                  "content_filter",
+                  "function_call"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finish Reason",
+            "description": "The reason the model stopped generating tokens. 'stop' = natural stop, 'length' = max_tokens reached, 'tool_calls' = model called a tool, 'content_filter' = content filtered."
+          },
+          "index": {
+            "type": "integer",
+            "title": "Index",
+            "description": "The index of this choice in the list of choices"
+          },
+          "message": {
+            "$ref": "#/components/schemas/ChatCompletionMessage",
+            "description": "The chat completion message generated by the model"
+          },
+          "logprobs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChoiceLogprobs"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Log probability information for the choice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "index",
+          "message"
+        ],
+        "title": "Choice",
+        "description": "A chat completion choice.\n\nOpenAI-compatible choice object for non-streaming responses.\nPart of the ChatCompletion response."
+      },
+      "ChoiceDelta": {
+        "properties": {
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          },
+          "function_call": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChoiceDeltaFunctionCall"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "refusal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refusal"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "developer",
+                  "system",
+                  "user",
+                  "assistant",
+                  "tool"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "tool_calls": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ChoiceDeltaToolCall"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Calls"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "ChoiceDelta"
+      },
+      "ChoiceDeltaFunctionCall": {
+        "properties": {
+          "arguments": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arguments"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "ChoiceDeltaFunctionCall"
+      },
+      "ChoiceDeltaToolCall": {
+        "properties": {
+          "index": {
+            "type": "integer",
+            "title": "Index"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "function": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChoiceDeltaToolCallFunction"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "function"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "index"
+        ],
+        "title": "ChoiceDeltaToolCall"
+      },
+      "ChoiceDeltaToolCallFunction": {
+        "properties": {
+          "arguments": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arguments"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "ChoiceDeltaToolCallFunction"
+      },
+      "ChoiceLogprobs": {
+        "properties": {
+          "content": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionTokenLogprob"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content",
+            "description": "Log probabilities for the content tokens"
+          },
+          "refusal": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionTokenLogprob"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refusal",
+            "description": "Log probabilities for refusal tokens, if any"
+          }
+        },
+        "type": "object",
+        "title": "ChoiceLogprobs",
+        "description": "Log probability information for the choice."
+      },
+      "ChunkChoice": {
+        "properties": {
+          "delta": {
+            "$ref": "#/components/schemas/ChoiceDelta",
+            "description": "Delta content for streaming responses"
+          },
+          "finish_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "stop",
+                  "length",
+                  "tool_calls",
+                  "content_filter",
+                  "function_call"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finish Reason",
+            "description": "The reason the model stopped (only in final chunk)"
+          },
+          "index": {
+            "type": "integer",
+            "title": "Index",
+            "description": "The index of this choice in the list of choices"
+          },
+          "logprobs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChoiceLogprobs"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Log probability information for the choice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "delta",
+          "index"
+        ],
+        "title": "ChunkChoice",
+        "description": "A streaming chat completion choice chunk.\n\nOpenAI-compatible choice object for streaming responses.\nPart of the ChatCompletionChunk response in SSE streams."
+      },
+      "CompletionTokensDetails": {
+        "properties": {
+          "accepted_prediction_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accepted Prediction Tokens"
+          },
+          "audio_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Tokens"
+          },
+          "reasoning_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoning Tokens"
+          },
+          "rejected_prediction_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejected Prediction Tokens"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "CompletionTokensDetails"
+      },
+      "CompletionUsage": {
+        "properties": {
+          "completion_tokens": {
+            "type": "integer",
+            "title": "Completion Tokens"
+          },
+          "prompt_tokens": {
+            "type": "integer",
+            "title": "Prompt Tokens"
+          },
+          "total_tokens": {
+            "type": "integer",
+            "title": "Total Tokens"
+          },
+          "completion_tokens_details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompletionTokensDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "prompt_tokens_details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PromptTokensDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "completion_tokens",
+          "prompt_tokens",
+          "total_tokens"
+        ],
+        "title": "CompletionUsage"
+      },
+      "Custom": {
+        "properties": {
+          "input": {
+            "type": "string",
+            "title": "Input"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "input",
+          "name"
+        ],
+        "title": "Custom"
+      },
+      "DedalusModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Model identifier"
+          },
+          "created": {
+            "type": "integer",
+            "title": "Created",
+            "description": "Unix timestamp of model creation",
+            "default": 0
+          },
+          "object": {
+            "type": "string",
+            "title": "Object",
+            "description": "Object type, always 'model'",
+            "default": "model"
+          },
+          "owned_by": {
+            "type": "string",
+            "title": "Owned By",
+            "description": "Organization that owns this model",
+            "default": "system"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Model name (alias for id)"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 2.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature",
+            "description": "Sampling temperature (0 to 2). Higher values make output more random."
+          },
+          "top_p": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top P",
+            "description": "Nucleus sampling parameter. Alternative to temperature."
+          },
+          "frequency_penalty": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 2.0,
+                "minimum": -2.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency Penalty",
+            "description": "Penalize new tokens based on their frequency in the text so far."
+          },
+          "presence_penalty": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 2.0,
+                "minimum": -2.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Presence Penalty",
+            "description": "Penalize new tokens based on whether they appear in the text so far."
+          },
+          "max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Tokens",
+            "description": "Maximum number of tokens to generate."
+          },
+          "max_completion_tokens": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Completion Tokens",
+            "description": "An upper bound for the number of tokens that can be generated for a completion."
+          },
+          "n": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 128.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N",
+            "description": "Number of completions to generate for each prompt."
+          },
+          "stop": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stop",
+            "description": "Up to 4 sequences where the API will stop generating further tokens."
+          },
+          "stream": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stream",
+            "description": "Whether to stream back partial progress."
+          },
+          "stream_options": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stream Options",
+            "description": "Options for streaming responses."
+          },
+          "logit_bias": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logit Bias",
+            "description": "Modify the likelihood of specified tokens appearing."
+          },
+          "logprobs": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logprobs",
+            "description": "Whether to return log probabilities of the output tokens."
+          },
+          "top_logprobs": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 20.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top Logprobs",
+            "description": "Number of most likely tokens to return at each token position."
+          },
+          "response_format": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Format",
+            "description": "Format for the model output (e.g., {'type': 'json_object'})."
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed",
+            "description": "Seed for deterministic sampling."
+          },
+          "service_tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Tier",
+            "description": "Latency tier for the request (e.g., 'auto', 'default')."
+          },
+          "tools": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tools",
+            "description": "List of tools the model may call."
+          },
+          "tool_choice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Choice",
+            "description": "Controls which tool is called by the model."
+          },
+          "parallel_tool_calls": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parallel Tool Calls",
+            "description": "Whether to enable parallel function calling."
+          },
+          "user": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User",
+            "description": "A unique identifier representing your end-user."
+          },
+          "attributes": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attributes",
+            "description": "[Dedalus] Custom attributes for intelligent model routing (e.g., intelligence, speed, creativity, cost)."
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata",
+            "description": "[Dedalus] Additional metadata for request tracking and debugging."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "DedalusModel",
+        "description": "Extended model with configuration capabilities.\n\nInherits basic metadata from Model and adds configuration fields\nthat can be used when creating chat completions. This allows bundling\nmodel selection with model-specific parameters.\n\nUse this when you want to:\n- Pre-configure model parameters\n- Pass model-specific settings\n- Use intelligent routing with attributes\n\nExample:\n    model = DedalusModel(\n        id=\"gpt-4\",\n        temperature=0.7,\n        max_tokens=1000,\n        attributes={\"intelligence\": 0.9, \"cost\": 0.8}\n    )\n\n    completion = client.chat.completions.create(\n        model=model,  # Pass the configured model\n        messages=[...]\n    )"
+      },
+      "DedalusModelChoice": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ModelId"
+          },
+          {
+            "$ref": "#/components/schemas/DedalusModel"
+          }
+        ],
+        "title": "DedalusModelChoice",
+        "description": "Dedalus model choice - either a string ID or DedalusModel configuration object."
+      },
+      "Function": {
+        "properties": {
+          "arguments": {
+            "type": "string",
+            "title": "Arguments"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "arguments",
+          "name"
+        ],
+        "title": "Function"
+      },
+      "FunctionCall": {
+        "properties": {
+          "arguments": {
+            "type": "string",
+            "title": "Arguments"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "arguments",
+          "name"
+        ],
+        "title": "FunctionCall"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "HealthResponse",
+        "description": "Health check response model."
+      },
+      "Model": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Model identifier"
+          },
+          "created": {
+            "type": "integer",
+            "title": "Created",
+            "description": "Unix timestamp of model creation",
+            "default": 0
+          },
+          "object": {
+            "type": "string",
+            "title": "Object",
+            "description": "Object type, always 'model'",
+            "default": "model"
+          },
+          "owned_by": {
+            "type": "string",
+            "title": "Owned By",
+            "description": "Organization that owns this model",
+            "default": "system"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "Model",
+        "description": "Model metadata following OpenAI's exact structure.\n\nThis is a read-only representation of available models returned by GET /v1/models.\nContains only essential metadata, no configuration fields.\n\nAttributes:\n    id: Model identifier (e.g., 'gpt-4', 'claude-3-5-sonnet')\n    created: Unix timestamp when model was created\n    object: Always 'model' for OpenAI compatibility\n    owned_by: Organization that owns the model\n\nExample:\n    {\n        \"id\": \"gpt-4\",\n        \"created\": 1687882411,\n        \"object\": \"model\",\n        \"owned_by\": \"openai\"\n    }"
+      },
+      "ModelId": {
+        "type": "string",
+        "title": "ModelId",
+        "description": "Model identifier string (e.g. 'openai/gpt-4', 'anthropic/claude-3-5-sonnet').",
+        "x-stainless-variantName": "ModelId"
+      },
+      "Models": {
+        "items": {
+          "$ref": "#/components/schemas/DedalusModelChoice"
+        },
+        "type": "array",
+        "title": "Models",
+        "description": "List of models for multi-model routing.",
+        "x-stainless-variantName": "Models"
+      },
+      "ModelsResponse": {
+        "properties": {
+          "object": {
+            "type": "string",
+            "title": "Object",
+            "description": "Object type",
+            "default": "list"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Model"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "List of models"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ModelsResponse",
+        "description": "Response containing list of available models.\n\nReturns all models available to the authenticated user based on\ntheir API key permissions and configured providers.\n\nAttributes:\n    object: Always 'list' for compatibility with OpenAI API\n    data: list of Model objects representing available models\n\nExample:\n    {\n        \"object\": \"list\",\n        \"data\": [\n            {\n                \"id\": \"openai/gpt-4\",\n                \"object\": \"model\",\n                \"owned_by\": \"openai\"\n            },\n            {\n                \"id\": \"anthropic/claude-3-5-sonnet-20241022\",\n                \"object\": \"model\",\n                \"owned_by\": \"anthropic\"\n            }\n        ]\n    }"
+      },
+      "PromptTokensDetails": {
+        "properties": {
+          "audio_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Tokens"
+          },
+          "cached_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cached Tokens"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "title": "PromptTokensDetails"
+      },
+      "RootResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "RootResponse",
+        "description": "Response model for the root endpoint of the Dedalus API."
+      },
+      "TopLogprob": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token",
+            "description": "The token"
+          },
+          "bytes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bytes",
+            "description": "Bytes representation of the token"
+          },
+          "logprob": {
+            "type": "number",
+            "title": "Logprob",
+            "description": "Log probability of this token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "logprob"
+        ],
+        "title": "TopLogprob",
+        "description": "Token and its log probability."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

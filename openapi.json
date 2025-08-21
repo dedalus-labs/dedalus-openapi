@@ -118,7 +118,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ChatCompletionRequest"
+                "$ref": "#/components/schemas/ChatCompletionRequestMessages"
               }
             }
           },
@@ -633,42 +633,8 @@
         ],
         "title": "ChatCompletionMessageFunctionToolCall"
       },
-      "ChatCompletionRequest": {
+      "ChatCompletionRequestMessages": {
         "properties": {
-          "messages": {
-            "anyOf": [
-              {
-                "items": {
-                  "additionalProperties": true,
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Messages",
-            "description": "Messages to the model - accepts either 'messages' (OpenAI) or 'input' (Dedalus). Supports role/content structure and multimodal content arrays.",
-            "examples": [
-              [
-                {
-                  "content": "Hello, how are you?",
-                  "role": "user"
-                }
-              ],
-              [
-                {
-                  "content": "You are a helpful assistant.",
-                  "role": "system"
-                },
-                {
-                  "content": "What is the weather like?",
-                  "role": "user"
-                }
-              ]
-            ]
-          },
           "model": {
             "anyOf": [
               {
@@ -1091,11 +1057,41 @@
               10,
               20
             ]
+          },
+          "messages": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Messages",
+            "description": "Messages to the model. Supports role/content structure and multimodal content arrays.",
+            "examples": [
+              [
+                {
+                  "content": "Hello, how are you?",
+                  "role": "user"
+                }
+              ],
+              [
+                {
+                  "content": "You are a helpful assistant.",
+                  "role": "system"
+                },
+                {
+                  "content": "What is the weather like?",
+                  "role": "user"
+                }
+              ]
+            ]
           }
         },
         "type": "object",
-        "title": "ChatCompletionRequest",
-        "description": "Request model for chat completions.\n\nValidates incoming chat requests with support for multimodality,\nmulti-model routing, and agent-enhanced features. Compatible with\nOpenAI API format while extending functionality for advanced use cases.\n\nThis model supports both the 'messages' field and the 'input' field\nfor maximum compatibility. The 'input' field can handle various\nmodalities beyond text messages.\n\nKey Features:\n    - Multi-model routing with intelligent handoffs\n    - MCP (Model Context Protocol) server integration\n    - Advanced agent attributes for routing decisions\n    - Client-side and server-side tool execution\n    - Streaming and non-streaming responses\n    - Automatic usage tracking and billing\n\nExamples:\n    Basic chat completion:\n    ```python\n    request = ChatCompletionRequest(\n        model=\"openai/gpt-4\",\n        messages=[{\"role\": \"user\", \"content\": \"Hello, how are you?\"}],\n    )\n    ```\n\n    Multi-model routing with attributes:\n    ```python\n    request = ChatCompletionRequest(\n        model=[\"openai/gpt-4o-mini\", \"openai/gpt-4\", \"anthropic/claude-3-5-sonnet\"],\n        messages=[{\"role\": \"user\", \"content\": \"Analyze this complex problem\"}],\n        agent_attributes={\"complexity\": 0.8, \"accuracy\": 0.9},\n        model_attributes={\n            \"gpt-4\": {\"intelligence\": 0.9, \"cost\": 0.8},\n            \"claude-3-5-sonnet\": {\"intelligence\": 0.95, \"cost\": 0.7},\n        },\n    )\n    ```\n\n    With tools and MCP servers:\n    ```python\n    request = ChatCompletionRequest(\n        model=\"openai/gpt-5\",\n        messages=[{\"role\": \"user\", \"content\": \"Search for AI news\"}],\n        tools=[\n            {\n                \"type\": \"function\",\n                \"function\": {\n                    \"name\": \"search_web\",\n                    \"description\": \"Search the web\",\n                },\n            }\n        ],\n        mcp_servers=[\"dedalus-labs/brave-search\"],\n        temperature=0.7,\n        max_tokens=1000,\n    )\n    ```"
+        "required": [
+          "messages"
+        ],
+        "title": "ChatCompletionRequestMessages",
+        "description": "Chat completion request with 'messages' field (OpenAI standard)."
       },
       "ChatCompletionTokenLogprob": {
         "properties": {
@@ -1571,40 +1567,10 @@
       },
       "DedalusModel": {
         "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id",
-            "description": "Model identifier"
-          },
-          "created": {
-            "type": "integer",
-            "title": "Created",
-            "description": "Unix timestamp of model creation",
-            "default": 0
-          },
-          "object": {
-            "type": "string",
-            "title": "Object",
-            "description": "Object type, always 'model'",
-            "default": "model"
-          },
-          "owned_by": {
-            "type": "string",
-            "title": "Owned By",
-            "description": "Organization that owns this model",
-            "default": "system"
-          },
           "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "string",
             "title": "Name",
-            "description": "Model name (alias for id)"
+            "description": "Model name (e.g., 'gpt-4', 'claude-3-5-sonnet')"
           },
           "temperature": {
             "anyOf": [
@@ -1912,10 +1878,10 @@
         },
         "type": "object",
         "required": [
-          "id"
+          "name"
         ],
         "title": "DedalusModel",
-        "description": "Extended model with configuration capabilities.\n\nInherits basic metadata from Model and adds configuration fields\nthat can be used when creating chat completions. This allows bundling\nmodel selection with model-specific parameters.\n\nUse this when you want to:\n- Pre-configure model parameters\n- Pass model-specific settings\n- Use intelligent routing with attributes\n\nExample:\n    model = DedalusModel(\n        id=\"gpt-4\",\n        temperature=0.7,\n        max_tokens=1000,\n        attributes={\"intelligence\": 0.9, \"cost\": 0.8}\n    )\n\n    completion = client.chat.completions.create(\n        model=model,  # Pass the configured model\n        messages=[...]\n    )"
+        "description": "Model configuration for chat completions.\n\nA user-friendly model configuration object that bundles model selection\nwith model-specific parameters. Unlike the Model class (which represents\nAPI response data), this class is designed for request configuration.\n\nUse this when you want to:\n- Pre-configure model parameters\n- Pass model-specific settings\n- Use intelligent routing with attributes\n\nExample:\n    model = DedalusModel(\n        name=\"gpt-4\",\n        temperature=0.7,\n        max_tokens=1000,\n        attributes={\"intelligence\": 0.9, \"cost\": 0.8}\n    )\n\n    completion = client.chat.completions.create(\n        model=model,  # Pass the configured model\n        messages=[...]\n    )"
       },
       "DedalusModelChoice": {
         "anyOf": [

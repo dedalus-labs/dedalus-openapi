@@ -16,6 +16,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 Our official clients are generated from this spec:
 
 - [dedalus-typescript](https://github.com/dedalus-labs/dedalus-typescript) (TypeScript)
+- [dedalus-python](https://github.com/dedalus-labs/dedalus-python) (Python)
 - [dedalus-go](https://github.com/dedalus-labs/dedalus-go) (Go)
 - [terraform-provider-dedalus](https://github.com/dedalus-labs/terraform-provider-dedalus) (Terraform)
 - [dedalus-cli](https://github.com/dedalus-labs/dedalus-cli) (CLI)

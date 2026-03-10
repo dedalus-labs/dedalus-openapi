@@ -1,6 +1,6 @@
 # Dedalus OpenAPI spec
 
-This repository contains an [OpenAPI](https://spec.openapis.org/oas/v3.1.0.html) specification for the Dedalus API.
+This repository contains an [OpenAPI](https://spec.openapis.org/oas/v3.1.0.html) specification for the [Dedalus API](https://docs.dedaluslabs.ai).
 
 It is generated with [Stainless](https://www.stainless.com/).
 

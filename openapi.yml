@@ -82,12 +82,6 @@ components:
           format: uri
           readOnly: true
           type: string
-        capture_paths:
-          items:
-            type: string
-          type:
-            - array
-            - "null"
         command:
           items:
             type: string
@@ -190,8 +184,6 @@ components:
           format: uri
           readOnly: true
           type: string
-        image_version:
-          type: string
         memory_mib:
           description: Memory in MiB.
           format: int64
@@ -207,7 +199,6 @@ components:
         - vcpu
         - memory_mib
         - storage_gib
-        - image_version
       type: object
     ErrorDetail:
       additionalProperties: false
@@ -483,8 +474,6 @@ components:
             - inactive
             - destroyed
           type: string
-        image_version:
-          type: string
         memory_mib:
           description: Memory in MiB.
           format: int64
@@ -511,8 +500,6 @@ components:
     LifecycleStatus:
       additionalProperties: false
       properties:
-        assigned_host:
-          type: string
         last_error:
           type: string
         last_progress_at:
@@ -520,16 +507,6 @@ components:
           type: string
         last_transition_at:
           format: date-time
-          type: string
-        memory_assigned_mib:
-          format: int64
-          type: integer
-        memory_resize_state:
-          type: string
-        memory_target_mib:
-          format: int64
-          type: integer
-        observed_revision:
           type: string
         phase:
           enum:
@@ -554,7 +531,6 @@ components:
         - reason
         - retryable
         - revision
-        - observed_revision
         - last_transition_at
         - last_progress_at
       type: object
@@ -1026,8 +1002,6 @@ components:
             - active
             - inactive
             - destroyed
-          type: string
-        image_version:
           type: string
         memory_mib:
           description: Memory in MiB.

@@ -5380,6 +5380,110 @@ paths:
       tags:
         - workspace-lifecycle
         - workspace-ssh
+  /v1/workspaces/{workspace_id}/status/stream:
+    get:
+      description: Streams workspace lifecycle updates over Server-Sent Events. Each `status` event contains a full `LifecycleResponse` payload. The stream closes after the workspace reaches its current desired state.
+      operationId: streamWorkspaceStatus
+      parameters:
+        - description: Organization ID header applied to all DCS requests.
+          in: header
+          name: X-Dedalus-Org-Id
+          schema:
+            format: uuid
+            type: string
+        - description: Workspace identifier.
+          in: path
+          name: workspace_id
+          required: true
+          schema:
+            type: string
+        - description: Optional resourceVersion bookmark used to resume a previous stream.
+          in: header
+          name: Last-Event-ID
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            text/event-stream:
+              schema:
+                $ref: "#/components/schemas/LifecycleResponse"
+          description: Server-Sent Event stream (`text/event-stream`) of workspace lifecycle updates.
+        "401":
+          content:
+            application/json:
+              examples:
+                invalid_key:
+                  value:
+                    error_code: AUTH_INVALID
+                    message: invalid Dedalus API key
+                    retryable: false
+                missing_key:
+                  value:
+                    error_code: AUTH_REQUIRED
+                    message: missing Dedalus API key
+                    retryable: false
+              schema:
+                additionalProperties: false
+                properties:
+                  details:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  error_code:
+                    type: string
+                  message:
+                    type: string
+                  retry_after_ms:
+                    format: int64
+                    type: integer
+                  retryable:
+                    type: boolean
+                required:
+                  - error_code
+                  - message
+                  - retryable
+                type: object
+          description: Authentication required
+        "403":
+          content:
+            application/json:
+              examples:
+                org_mismatch:
+                  value:
+                    error_code: AUTH_ORG_MISMATCH
+                    message: org scope does not match API key ownership
+                    retryable: false
+                scope_forbidden:
+                  value:
+                    error_code: AUTH_SCOPE_FORBIDDEN
+                    message: internal service authorization is required
+                    retryable: false
+              schema:
+                additionalProperties: false
+                properties:
+                  details:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  error_code:
+                    type: string
+                  message:
+                    type: string
+                  retry_after_ms:
+                    format: int64
+                    type: integer
+                  retryable:
+                    type: boolean
+                required:
+                  - error_code
+                  - message
+                  - retryable
+                type: object
+          description: Forbidden
+      summary: Stream workspace lifecycle status
+      tags:
+        - workspace-lifecycle
   /v1/workspaces/{workspace_id}/terminals:
     get:
       operationId: listWorkspaceTerminals

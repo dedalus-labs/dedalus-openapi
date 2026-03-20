@@ -6602,6 +6602,164 @@ paths:
             --api-key 'My API Key' \
             --workspace-id workspace_id \
             --session-id session_id
+  /v1/workspaces/{workspace_id}/status/stream:
+    get:
+      description: Streams workspace lifecycle updates over Server-Sent Events. Each `status` event contains a full `LifecycleResponse` payload. The stream closes after the workspace reaches its current desired state.
+      operationId: streamWorkspaceStatus
+      parameters:
+        - description: Organization ID header applied to all DCS requests.
+          in: header
+          name: X-Dedalus-Org-Id
+          schema:
+            format: uuid
+            type: string
+        - description: Workspace identifier.
+          in: path
+          name: workspace_id
+          required: true
+          schema:
+            type: string
+        - description: Optional resourceVersion bookmark used to resume a previous stream.
+          in: header
+          name: Last-Event-ID
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            text/event-stream:
+              schema:
+                $ref: "#/components/schemas/LifecycleResponse"
+          description: Server-Sent Event stream (`text/event-stream`) of workspace lifecycle updates.
+        "401":
+          content:
+            application/json:
+              examples:
+                invalid_key:
+                  value:
+                    error_code: AUTH_INVALID
+                    message: invalid Dedalus API key
+                    retryable: false
+                missing_key:
+                  value:
+                    error_code: AUTH_REQUIRED
+                    message: missing Dedalus API key
+                    retryable: false
+              schema:
+                additionalProperties: false
+                properties:
+                  details:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  error_code:
+                    type: string
+                  message:
+                    type: string
+                  retry_after_ms:
+                    format: int64
+                    type: integer
+                  retryable:
+                    type: boolean
+                required:
+                  - error_code
+                  - message
+                  - retryable
+                type: object
+          description: Authentication required
+        "403":
+          content:
+            application/json:
+              examples:
+                org_mismatch:
+                  value:
+                    error_code: AUTH_ORG_MISMATCH
+                    message: org scope does not match API key ownership
+                    retryable: false
+                scope_forbidden:
+                  value:
+                    error_code: AUTH_SCOPE_FORBIDDEN
+                    message: internal service authorization is required
+                    retryable: false
+              schema:
+                additionalProperties: false
+                properties:
+                  details:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  error_code:
+                    type: string
+                  message:
+                    type: string
+                  retry_after_ms:
+                    format: int64
+                    type: integer
+                  retryable:
+                    type: boolean
+                required:
+                  - error_code
+                  - message
+                  - retryable
+                type: object
+          description: Forbidden
+      summary: Stream workspace lifecycle status
+      tags:
+        - workspace-lifecycle
+      x-stainless-snippets:
+        typescript: |-
+          import Dedalus from 'dedalus';
+
+          const client = new Dedalus({
+            apiKey: process.env['DEDALUS_API_KEY'], // This is the default and can be omitted
+          });
+
+          const workspace = await client.workspaces.streamStatus('workspace_id');
+
+          console.log(workspace.workspace_id);
+        python: |-
+          import os
+          from dedalus_sdk import Dedalus
+
+          client = Dedalus(
+              api_key=os.environ.get("DEDALUS_API_KEY"),  # This is the default and can be omitted
+          )
+          for workspace in client.workspaces.stream_status(
+              workspace_id="workspace_id",
+          ):
+            print(workspace)
+        go: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/dedalus-labs/dedalus-go"
+          	"github.com/dedalus-labs/dedalus-go/option"
+          )
+
+          func main() {
+          	client := dedalus.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	stream := client.Workspaces.StreamStatusStreaming(
+          		context.TODO(),
+          		"workspace_id",
+          		dedalus.WorkspaceStreamStatusParams{},
+          	)
+          	for stream.Next() {
+          		fmt.Printf("%+v\n", stream.Current())
+          	}
+          	err := stream.Err()
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          }
+        cli: |-
+          dedalus workspaces stream-status \
+            --api-key 'My API Key' \
+            --workspace-id workspace_id
   /v1/workspaces/{workspace_id}/terminals:
     get:
       operationId: listWorkspaceTerminals

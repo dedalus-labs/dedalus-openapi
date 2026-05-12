@@ -396,6 +396,135 @@
         ],
         "type": "object"
       },
+      "MachineComputeUsageBody": {
+        "additionalProperties": false,
+        "properties": {
+          "granularity": {
+            "description": "Usage breakdown granularity used for rows: hour or day.",
+            "type": "string"
+          },
+          "period_end": {
+            "description": "Exclusive usage period end.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "period_start": {
+            "description": "Inclusive usage period start.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "rows": {
+            "description": "Machine-level compute usage breakdown rows.",
+            "items": {
+              "$ref": "#/components/schemas/MachineComputeUsageRowBody"
+            },
+            "type": ["array", "null"]
+          }
+        },
+        "required": ["granularity", "period_start", "period_end", "rows"],
+        "type": "object"
+      },
+      "MachineComputeUsageRowBody": {
+        "additionalProperties": false,
+        "properties": {
+          "awake_seconds": {
+            "description": "Machine-awake seconds in this bucket.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "bucket_end": {
+            "description": "Exclusive usage bucket end.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "bucket_start": {
+            "description": "Inclusive usage bucket start.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "cpu_millicore_seconds": {
+            "description": "Requested vCPU millicores multiplied by guest-owned active CPU seconds.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "last_window_end": {
+            "description": "Latest raw window_end represented by this row.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "latest_stripe_emitted_at": {
+            "description": "Latest Stripe emission timestamp for linked org buckets, when emitted.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "machine_id": {
+            "description": "Machine identifier.",
+            "type": "string"
+          },
+          "memory_mib_seconds": {
+            "description": "Requested memory MiB multiplied by running allocation seconds.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "org_metering_bucket_ids": {
+            "description": "Org compute bucket IDs this row contributes to.",
+            "items": { "type": "string" },
+            "type": ["array", "null"]
+          },
+          "requested_memory_mib": {
+            "description": "Requested memory for this shape, in MiB.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "requested_storage_gib": {
+            "description": "Requested storage for this shape, in GiB.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "requested_vcpu": {
+            "description": "Requested vCPU for this shape.",
+            "format": "double",
+            "type": "number"
+          },
+          "spec_fingerprint": {
+            "description": "Stable fingerprint for the requested machine shape.",
+            "type": "string"
+          },
+          "stripe_cpu_identifiers": {
+            "description": "Stripe CPU meter event identifiers linked to those org buckets.",
+            "items": { "type": "string" },
+            "type": ["array", "null"]
+          },
+          "stripe_memory_identifiers": {
+            "description": "Stripe memory meter event identifiers linked to those org buckets.",
+            "items": { "type": "string" },
+            "type": ["array", "null"]
+          },
+          "window_count": {
+            "description": "Raw usage windows compacted into this row.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "machine_id",
+          "spec_fingerprint",
+          "requested_vcpu",
+          "requested_memory_mib",
+          "requested_storage_gib",
+          "bucket_start",
+          "bucket_end",
+          "awake_seconds",
+          "cpu_millicore_seconds",
+          "memory_mib_seconds",
+          "window_count",
+          "last_window_end",
+          "org_metering_bucket_ids",
+          "stripe_cpu_identifiers",
+          "stripe_memory_identifiers"
+        ],
+        "type": "object"
+      },
       "MachineIDPathSegment": {
         "maxLength": 253,
         "minLength": 4,
@@ -459,19 +588,19 @@
         "additionalProperties": false,
         "properties": {
           "period_end": {
-            "description": "Exclusive evidence period end.",
+            "description": "Exclusive usage period end.",
             "format": "date-time",
             "type": "string"
           },
           "period_start": {
-            "description": "Inclusive evidence period start.",
+            "description": "Inclusive usage period start.",
             "format": "date-time",
             "type": "string"
           },
           "rows": {
-            "description": "Machine-level storage usage evidence rows.",
+            "description": "Machine-level storage usage breakdown rows.",
             "items": {
-              "$ref": "#/components/schemas/MachineStorageUsageEvidenceBody"
+              "$ref": "#/components/schemas/MachineStorageUsageRowBody"
             },
             "type": ["array", "null"]
           }
@@ -479,16 +608,16 @@
         "required": ["period_start", "period_end", "rows"],
         "type": "object"
       },
-      "MachineStorageUsageEvidenceBody": {
+      "MachineStorageUsageRowBody": {
         "additionalProperties": false,
         "properties": {
           "bucket_end": {
-            "description": "Exclusive evidence bucket end.",
+            "description": "Exclusive usage bucket end.",
             "format": "date-time",
             "type": "string"
           },
           "bucket_start": {
-            "description": "Inclusive evidence bucket start.",
+            "description": "Inclusive usage bucket start.",
             "format": "date-time",
             "type": "string"
           },
@@ -507,7 +636,7 @@
             "type": "string"
           },
           "org_metering_bucket_id": {
-            "description": "Org storage bucket ID this evidence row contributes to.",
+            "description": "Org storage bucket ID this row contributes to.",
             "type": "string"
           },
           "storage_mib_seconds": {
@@ -528,135 +657,6 @@
           "storage_mib_seconds",
           "org_metering_bucket_id",
           "stripe_storage_identifier"
-        ],
-        "type": "object"
-      },
-      "MachineUsageBody": {
-        "additionalProperties": false,
-        "properties": {
-          "granularity": {
-            "description": "Evidence granularity used for rows: hour or day.",
-            "type": "string"
-          },
-          "period_end": {
-            "description": "Exclusive evidence period end.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "period_start": {
-            "description": "Inclusive evidence period start.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "rows": {
-            "description": "Machine-level usage evidence rows.",
-            "items": {
-              "$ref": "#/components/schemas/MachineUsageEvidenceBody"
-            },
-            "type": ["array", "null"]
-          }
-        },
-        "required": ["granularity", "period_start", "period_end", "rows"],
-        "type": "object"
-      },
-      "MachineUsageEvidenceBody": {
-        "additionalProperties": false,
-        "properties": {
-          "awake_seconds": {
-            "description": "Machine-awake seconds in this bucket.",
-            "format": "int64",
-            "type": "integer"
-          },
-          "bucket_end": {
-            "description": "Exclusive evidence bucket end.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "bucket_start": {
-            "description": "Inclusive evidence bucket start.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "cpu_millicore_seconds": {
-            "description": "Requested vCPU millicores multiplied by active CPU seconds.",
-            "format": "int64",
-            "type": "integer"
-          },
-          "last_window_end": {
-            "description": "Latest raw window_end represented by this row.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "latest_stripe_emitted_at": {
-            "description": "Latest Stripe emission timestamp for linked org buckets, when emitted.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "machine_id": {
-            "description": "Machine identifier.",
-            "type": "string"
-          },
-          "memory_mib_seconds": {
-            "description": "Requested memory MiB multiplied by awake seconds.",
-            "format": "int64",
-            "type": "integer"
-          },
-          "org_metering_bucket_ids": {
-            "description": "Org compute bucket IDs this evidence row contributes to.",
-            "items": { "type": "string" },
-            "type": ["array", "null"]
-          },
-          "requested_memory_mib": {
-            "description": "Requested memory for this shape, in MiB.",
-            "format": "int32",
-            "type": "integer"
-          },
-          "requested_storage_gib": {
-            "description": "Requested storage for this shape, in GiB.",
-            "format": "int32",
-            "type": "integer"
-          },
-          "requested_vcpu": {
-            "description": "Requested vCPU for this shape.",
-            "format": "double",
-            "type": "number"
-          },
-          "spec_fingerprint": {
-            "description": "Stable fingerprint for the requested machine shape.",
-            "type": "string"
-          },
-          "stripe_cpu_identifiers": {
-            "description": "Stripe CPU meter event identifiers linked to those org buckets.",
-            "items": { "type": "string" },
-            "type": ["array", "null"]
-          },
-          "stripe_memory_identifiers": {
-            "description": "Stripe memory meter event identifiers linked to those org buckets.",
-            "items": { "type": "string" },
-            "type": ["array", "null"]
-          },
-          "window_count": {
-            "description": "Raw usage windows compacted into this evidence row.",
-            "format": "int64",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "machine_id",
-          "spec_fingerprint",
-          "requested_vcpu",
-          "requested_memory_mib",
-          "requested_storage_gib",
-          "bucket_start",
-          "bucket_end",
-          "awake_seconds",
-          "cpu_millicore_seconds",
-          "memory_mib_seconds",
-          "window_count",
-          "last_window_end",
-          "org_metering_bucket_ids",
-          "stripe_cpu_identifiers",
-          "stripe_memory_identifiers"
         ],
         "type": "object"
       },
@@ -1084,7 +1084,7 @@
             "type": "integer"
           },
           "billed_cpu_millicore_seconds": {
-            "description": "Closed requested vCPU millicores multiplied by active CPU seconds for the period.",
+            "description": "Closed requested vCPU millicores multiplied by guest-owned active CPU seconds for the period.",
             "format": "int64",
             "type": "integer"
           },
@@ -1094,7 +1094,7 @@
             "type": "integer"
           },
           "billed_memory_mib_seconds": {
-            "description": "Closed requested memory MiB multiplied by awake seconds for the period.",
+            "description": "Closed requested memory MiB multiplied by running allocation seconds for the period.",
             "format": "int64",
             "type": "integer"
           },
@@ -7787,17 +7787,10 @@
         "tags": ["Machine Lifecycle"]
       }
     },
-    "/v1/orgs/{org_id}/usage": {
+    "/v1/usage": {
       "get": {
-        "operationId": "getOrgUsage",
+        "operationId": "getUsage",
         "parameters": [
-          {
-            "description": "Organization ID.",
-            "in": "path",
-            "name": "org_id",
-            "required": true,
-            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
-          },
           {
             "description": "Billing period start (YYYY-MM-DD). Defaults to first of current month.",
             "explode": false,
@@ -7969,38 +7962,31 @@
             "description": "Error"
           }
         },
-        "summary": "Get org billed machine usage",
-        "tags": ["Machine Lifecycle"]
+        "summary": "Get usage summary",
+        "tags": ["Usage", "Machine Lifecycle"]
       }
     },
-    "/v1/orgs/{org_id}/usage/machines": {
+    "/v1/usage/machines/compute": {
       "get": {
-        "operationId": "listOrgMachineUsageEvidence",
+        "operationId": "listMachineComputeUsage",
         "parameters": [
           {
-            "description": "Organization ID.",
-            "in": "path",
-            "name": "org_id",
-            "required": true,
-            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
-          },
-          {
-            "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+            "description": "Usage period start (YYYY-MM-DD). Defaults to first of current month.",
             "explode": false,
             "in": "query",
             "name": "period_start",
             "schema": {
-              "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+              "description": "Usage period start (YYYY-MM-DD). Defaults to first of current month.",
               "type": "string"
             }
           },
           {
-            "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+            "description": "Last UTC usage date to include (YYYY-MM-DD). Defaults to current time.",
             "explode": false,
             "in": "query",
             "name": "period_end",
             "schema": {
-              "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+              "description": "Last UTC usage date to include (YYYY-MM-DD). Defaults to current time.",
               "type": "string"
             }
           },
@@ -8015,12 +8001,12 @@
             }
           },
           {
-            "description": "Evidence granularity: hour or day. Defaults to hour.",
+            "description": "Usage breakdown granularity: hour or day. Defaults to hour.",
             "explode": false,
             "in": "query",
             "name": "granularity",
             "schema": {
-              "description": "Evidence granularity: hour or day. Defaults to hour.",
+              "description": "Usage breakdown granularity: hour or day. Defaults to hour.",
               "type": "string"
             }
           }
@@ -8029,7 +8015,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/MachineUsageBody" }
+                "schema": {
+                  "$ref": "#/components/schemas/MachineComputeUsageBody"
+                }
               }
             },
             "description": "OK"
@@ -8185,38 +8173,31 @@
             "description": "Error"
           }
         },
-        "summary": "List machine usage evidence",
-        "tags": ["Machine Lifecycle"]
+        "summary": "List machine compute usage breakdown",
+        "tags": ["Usage", "Machine Lifecycle"]
       }
     },
-    "/v1/orgs/{org_id}/usage/storage/machines": {
+    "/v1/usage/machines/storage": {
       "get": {
-        "operationId": "listOrgMachineStorageUsageEvidence",
+        "operationId": "listMachineStorageUsage",
         "parameters": [
           {
-            "description": "Organization ID.",
-            "in": "path",
-            "name": "org_id",
-            "required": true,
-            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
-          },
-          {
-            "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+            "description": "Usage period start (YYYY-MM-DD). Defaults to first of current month.",
             "explode": false,
             "in": "query",
             "name": "period_start",
             "schema": {
-              "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+              "description": "Usage period start (YYYY-MM-DD). Defaults to first of current month.",
               "type": "string"
             }
           },
           {
-            "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+            "description": "Last UTC usage date to include (YYYY-MM-DD). Defaults to current time.",
             "explode": false,
             "in": "query",
             "name": "period_end",
             "schema": {
-              "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+              "description": "Last UTC usage date to include (YYYY-MM-DD). Defaults to current time.",
               "type": "string"
             }
           },
@@ -8393,8 +8374,8 @@
             "description": "Error"
           }
         },
-        "summary": "List machine storage usage evidence",
-        "tags": ["Machine Lifecycle"]
+        "summary": "List machine storage usage breakdown",
+        "tags": ["Usage", "Machine Lifecycle"]
       }
     }
   },

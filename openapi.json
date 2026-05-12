@@ -45,6 +45,12 @@
         ],
         "type": "object"
       },
+      "BustCreditCacheOutputBody": {
+        "additionalProperties": false,
+        "properties": { "busted": { "type": "boolean" } },
+        "required": ["busted"],
+        "type": "object"
+      },
       "CreateExecutionRequest": {
         "additionalProperties": false,
         "properties": {
@@ -66,6 +72,10 @@
       "CreateMachineRequest": {
         "additionalProperties": false,
         "properties": {
+          "autosleep": {
+            "description": "Idle window before autosleep. Accepts fixed duration units like 30s, 30m, 2h, 7d3h4s, or 1w3d, raw seconds (\"1800\"), or never to disable.",
+            "type": "string"
+          },
           "memory_mib": {
             "description": "Memory in MiB.",
             "format": "int64",
@@ -292,9 +302,37 @@
         ],
         "type": "object"
       },
+      "HostAgentRolloutOutputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": { "type": "string" },
+          "request_id": { "type": "string" },
+          "source_nodes": {
+            "items": { "type": "string" },
+            "type": ["array", "null"]
+          },
+          "state": { "type": "string" },
+          "warm_pool": { "type": "string" }
+        },
+        "required": [
+          "request_id",
+          "reason",
+          "source_nodes",
+          "state",
+          "warm_pool"
+        ],
+        "type": "object"
+      },
       "LifecycleResponse": {
         "additionalProperties": false,
         "properties": {
+          "autosleep_seconds": {
+            "description": "Seconds of inactivity before autosleep. 0 disables autosleep.",
+            "format": "int64",
+            "maximum": 9223372036,
+            "minimum": 0,
+            "type": "integer"
+          },
           "desired_state": {
             "enum": ["running", "sleeping", "destroyed"],
             "type": "string"
@@ -318,6 +356,7 @@
           "vcpu",
           "memory_mib",
           "storage_gib",
+          "autosleep_seconds",
           "desired_state",
           "status"
         ],
@@ -357,9 +396,22 @@
         ],
         "type": "object"
       },
+      "MachineIDPathSegment": {
+        "maxLength": 253,
+        "minLength": 4,
+        "pattern": "^dm-[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+        "type": "string"
+      },
       "MachineListItem": {
         "additionalProperties": false,
         "properties": {
+          "autosleep_seconds": {
+            "description": "Seconds of inactivity before autosleep. 0 disables autosleep.",
+            "format": "int64",
+            "maximum": 9223372036,
+            "minimum": 0,
+            "type": "integer"
+          },
           "created_at": { "format": "date-time", "type": "string" },
           "desired_state": {
             "enum": ["running", "sleeping", "destroyed"],
@@ -384,6 +436,7 @@
           "vcpu",
           "memory_mib",
           "storage_gib",
+          "autosleep_seconds",
           "desired_state",
           "status",
           "created_at"
@@ -400,6 +453,334 @@
           "next_cursor": { "type": "string" }
         },
         "required": ["items"],
+        "type": "object"
+      },
+      "MachineStorageUsageBody": {
+        "additionalProperties": false,
+        "properties": {
+          "period_end": {
+            "description": "Exclusive evidence period end.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "period_start": {
+            "description": "Inclusive evidence period start.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "rows": {
+            "description": "Machine-level storage usage evidence rows.",
+            "items": {
+              "$ref": "#/components/schemas/MachineStorageUsageEvidenceBody"
+            },
+            "type": ["array", "null"]
+          }
+        },
+        "required": ["period_start", "period_end", "rows"],
+        "type": "object"
+      },
+      "MachineStorageUsageEvidenceBody": {
+        "additionalProperties": false,
+        "properties": {
+          "bucket_end": {
+            "description": "Exclusive evidence bucket end.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "bucket_start": {
+            "description": "Inclusive evidence bucket start.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "latest_stripe_emitted_at": {
+            "description": "Latest Stripe emission timestamp for the linked org bucket, when emitted.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "logical_storage_bytes": {
+            "description": "Machine logical bytes observed for storage allocation.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "machine_id": {
+            "description": "Machine identifier.",
+            "type": "string"
+          },
+          "org_metering_bucket_id": {
+            "description": "Org storage bucket ID this evidence row contributes to.",
+            "type": "string"
+          },
+          "storage_mib_seconds": {
+            "description": "Allocated logical MiB-seconds for this machine.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "stripe_storage_identifier": {
+            "description": "Stripe storage meter event identifier linked to that org bucket.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "machine_id",
+          "bucket_start",
+          "bucket_end",
+          "logical_storage_bytes",
+          "storage_mib_seconds",
+          "org_metering_bucket_id",
+          "stripe_storage_identifier"
+        ],
+        "type": "object"
+      },
+      "MachineUsageBody": {
+        "additionalProperties": false,
+        "properties": {
+          "granularity": {
+            "description": "Evidence granularity used for rows: hour or day.",
+            "type": "string"
+          },
+          "period_end": {
+            "description": "Exclusive evidence period end.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "period_start": {
+            "description": "Inclusive evidence period start.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "rows": {
+            "description": "Machine-level usage evidence rows.",
+            "items": {
+              "$ref": "#/components/schemas/MachineUsageEvidenceBody"
+            },
+            "type": ["array", "null"]
+          }
+        },
+        "required": ["granularity", "period_start", "period_end", "rows"],
+        "type": "object"
+      },
+      "MachineUsageEvidenceBody": {
+        "additionalProperties": false,
+        "properties": {
+          "awake_seconds": {
+            "description": "Machine-awake seconds in this bucket.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "bucket_end": {
+            "description": "Exclusive evidence bucket end.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "bucket_start": {
+            "description": "Inclusive evidence bucket start.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "cpu_millicore_seconds": {
+            "description": "Requested vCPU millicores multiplied by active CPU seconds.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "last_window_end": {
+            "description": "Latest raw window_end represented by this row.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "latest_stripe_emitted_at": {
+            "description": "Latest Stripe emission timestamp for linked org buckets, when emitted.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "machine_id": {
+            "description": "Machine identifier.",
+            "type": "string"
+          },
+          "memory_mib_seconds": {
+            "description": "Requested memory MiB multiplied by awake seconds.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "org_metering_bucket_ids": {
+            "description": "Org compute bucket IDs this evidence row contributes to.",
+            "items": { "type": "string" },
+            "type": ["array", "null"]
+          },
+          "requested_memory_mib": {
+            "description": "Requested memory for this shape, in MiB.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "requested_storage_gib": {
+            "description": "Requested storage for this shape, in GiB.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "requested_vcpu": {
+            "description": "Requested vCPU for this shape.",
+            "format": "double",
+            "type": "number"
+          },
+          "spec_fingerprint": {
+            "description": "Stable fingerprint for the requested machine shape.",
+            "type": "string"
+          },
+          "stripe_cpu_identifiers": {
+            "description": "Stripe CPU meter event identifiers linked to those org buckets.",
+            "items": { "type": "string" },
+            "type": ["array", "null"]
+          },
+          "stripe_memory_identifiers": {
+            "description": "Stripe memory meter event identifiers linked to those org buckets.",
+            "items": { "type": "string" },
+            "type": ["array", "null"]
+          },
+          "window_count": {
+            "description": "Raw usage windows compacted into this evidence row.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "machine_id",
+          "spec_fingerprint",
+          "requested_vcpu",
+          "requested_memory_mib",
+          "requested_storage_gib",
+          "bucket_start",
+          "bucket_end",
+          "awake_seconds",
+          "cpu_millicore_seconds",
+          "memory_mib_seconds",
+          "window_count",
+          "last_window_end",
+          "org_metering_bucket_ids",
+          "stripe_cpu_identifiers",
+          "stripe_memory_identifiers"
+        ],
+        "type": "object"
+      },
+      "MeteringClosedThroughBody": {
+        "additionalProperties": false,
+        "properties": {
+          "compute_cpu": {
+            "description": "Latest CPU org bucket end.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "compute_memory": {
+            "description": "Latest memory org bucket end.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "storage": {
+            "description": "Latest storage org bucket end.",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "MeteringHealthBody": {
+        "additionalProperties": false,
+        "properties": {
+          "clickhouse_latest_raw_event_at": {
+            "description": "Latest raw ClickHouse usage event timestamp.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "clickhouse_oldest_raw_event_at": {
+            "description": "Oldest raw ClickHouse usage event timestamp still retained.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "clickhouse_raw_rows_near_ttl": {
+            "description": "Raw ClickHouse rows within 24 hours of the 30-day TTL.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "closed_through": {
+            "$ref": "#/components/schemas/MeteringClosedThroughBody",
+            "description": "Latest closed org bucket cursor per resource."
+          },
+          "generated_at": {
+            "description": "Time this health snapshot was generated.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "oldest_logical_storage_observed_at": {
+            "description": "Oldest logical storage observation timestamp across current machine specs.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "stale_logical_storage_gauge_count": {
+            "description": "Machine storage gauges missing or older than the freshness window.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "stripe_outbox": {
+            "description": "Pending Stripe outbox buckets grouped by resource.",
+            "items": {
+              "$ref": "#/components/schemas/MeteringStripeOutboxBody"
+            },
+            "type": ["array", "null"]
+          }
+        },
+        "required": [
+          "generated_at",
+          "clickhouse_raw_rows_near_ttl",
+          "closed_through",
+          "stripe_outbox",
+          "stale_logical_storage_gauge_count"
+        ],
+        "type": "object"
+      },
+      "MeteringStripeOutboxBody": {
+        "additionalProperties": false,
+        "properties": {
+          "claimed_not_submitted_buckets": {
+            "description": "Pending org buckets claimed by a sweeper but not marked submitted to Stripe.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "oldest_bucket_end": {
+            "description": "Oldest pending bucket end timestamp.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "pending_buckets": {
+            "description": "Unemitted org bucket count.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "pending_unclaimed_buckets": {
+            "description": "Pending org buckets with no active emission claim.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "resource": {
+            "description": "Org metering bucket resource.",
+            "type": "string"
+          },
+          "stripe_emission_lag_seconds": {
+            "description": "Seconds since the oldest pending bucket ended.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "submitted_not_emitted_buckets": {
+            "description": "Pending org buckets marked submitted to Stripe but not marked emitted.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "resource",
+          "pending_buckets",
+          "pending_unclaimed_buckets",
+          "claimed_not_submitted_buckets",
+          "submitted_not_emitted_buckets",
+          "stripe_emission_lag_seconds"
+        ],
         "type": "object"
       },
       "PreviewListResponse": {
@@ -453,6 +834,12 @@
         ],
         "type": "object"
       },
+      "PublicPathSegment": {
+        "maxLength": 253,
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9]([A-Za-z0-9._-]*[A-Za-z0-9])?$",
+        "type": "string"
+      },
       "PurgeMachineOutputBody": {
         "additionalProperties": false,
         "properties": {
@@ -460,6 +847,19 @@
           "purge_state": { "type": "string" }
         },
         "required": ["machine_id", "purge_state"],
+        "type": "object"
+      },
+      "RequestHostAgentRolloutInputBody": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": { "type": "string" },
+          "request_id": { "type": "string" },
+          "source_nodes": {
+            "items": { "type": "string" },
+            "type": ["array", "null"]
+          }
+        },
+        "required": ["reason", "source_nodes"],
         "type": "object"
       },
       "SSHConnection": {
@@ -653,6 +1053,10 @@
       "UpdateMachineRequest": {
         "additionalProperties": false,
         "properties": {
+          "autosleep": {
+            "description": "Idle window before autosleep. Accepts fixed duration units like 30s, 30m, 2h, 7d3h4s, or 1w3d, raw seconds (\"1800\"), or never to disable.",
+            "type": "string"
+          },
           "memory_mib": {
             "description": "Memory in MiB.",
             "format": "int64",
@@ -669,6 +1073,55 @@
             "type": "number"
           }
         },
+        "type": "object"
+      },
+      "UsageBody": {
+        "additionalProperties": false,
+        "properties": {
+          "billed_awake_seconds": {
+            "description": "Closed awake seconds in billed org buckets for the period.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "billed_cpu_millicore_seconds": {
+            "description": "Closed requested vCPU millicores multiplied by active CPU seconds for the period.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "billed_logical_storage_mib_seconds": {
+            "description": "Closed billable logical MiB-seconds for the period, matching the Stripe storage meter.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "billed_memory_mib_seconds": {
+            "description": "Closed requested memory MiB multiplied by awake seconds for the period.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "included_storage_gib": {
+            "description": "Plan-included storage in GiB, used as a local guardrail only.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "plan_slug": {
+            "description": "Billing plan in effect for the organization.",
+            "type": "string"
+          },
+          "provisioned_storage_gib": {
+            "description": "Current provisioned storage summed across machines in GiB.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "plan_slug",
+          "billed_awake_seconds",
+          "billed_cpu_millicore_seconds",
+          "billed_memory_mib_seconds",
+          "provisioned_storage_gib",
+          "included_storage_gib",
+          "billed_logical_storage_mib_seconds"
+        ],
         "type": "object"
       },
       "WakeAdmissionResponse": {
@@ -953,7 +1406,7 @@
                 "schema": { "$ref": "#/components/schemas/LifecycleResponse" }
               }
             },
-            "description": "OK",
+            "description": "Create converged inline",
             "headers": {
               "ETag": { "schema": { "type": "string" } },
               "X-Dedalus-Storage-Operation-Id": {
@@ -1197,13 +1650,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
-          },
-          {
-            "in": "header",
-            "name": "If-Match",
-            "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "header",
@@ -1461,7 +1908,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           }
         ],
         "responses": {
@@ -1657,13 +2104,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
-          },
-          {
-            "in": "header",
-            "name": "If-Match",
-            "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "header",
@@ -1810,22 +2251,6 @@
                         "current_observed_state": "destroyed",
                         "expected_observed_state": "running",
                         "target_desired_state": "running"
-                      }
-                    }
-                  },
-                  "sleep_hold_window_active": {
-                    "value": {
-                      "error_code": "SLEEP_HOLD_WINDOW_ACTIVE",
-                      "message": "sleep hold window is active",
-                      "retryable": true,
-                      "retry_after_ms": 50000,
-                      "details": {
-                        "effective_hold_window_ms": "310000",
-                        "hold_window_ms": "300000",
-                        "jitter_ms": "10000",
-                        "last_wake_at": "2026-02-27T00:00:00Z",
-                        "next_sleep_eligible_at": "2026-02-27T00:05:10Z",
-                        "remaining_ms": "50000"
                       }
                     }
                   }
@@ -1982,7 +2407,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "explode": false,
@@ -2193,13 +2618,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "artifact_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -2396,13 +2821,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "artifact_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -2599,7 +3024,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "explode": false,
@@ -2808,7 +3233,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "header",
@@ -3058,13 +3483,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "execution_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -3261,13 +3686,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "execution_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -3464,13 +3889,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "execution_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           },
           {
             "explode": false,
@@ -3681,13 +4106,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "execution_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -3886,7 +4311,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "explode": false,
@@ -4093,7 +4518,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "header",
@@ -4341,13 +4766,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "preview_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -4544,13 +4969,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "preview_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -4747,13 +5172,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
-          },
-          {
-            "in": "header",
-            "name": "If-Match",
-            "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "header",
@@ -4894,22 +5313,6 @@
                         "target_desired_state": "sleeping"
                       }
                     }
-                  },
-                  "sleep_hold_window_active": {
-                    "value": {
-                      "error_code": "SLEEP_HOLD_WINDOW_ACTIVE",
-                      "message": "sleep hold window is active",
-                      "retryable": true,
-                      "retry_after_ms": 50000,
-                      "details": {
-                        "effective_hold_window_ms": "310000",
-                        "hold_window_ms": "300000",
-                        "jitter_ms": "10000",
-                        "last_wake_at": "2026-02-27T00:00:00Z",
-                        "next_sleep_eligible_at": "2026-02-27T00:05:10Z",
-                        "remaining_ms": "50000"
-                      }
-                    }
                   }
                 },
                 "schema": {
@@ -5042,7 +5445,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "explode": false,
@@ -5251,7 +5654,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "header",
@@ -5501,13 +5904,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "session_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -5704,13 +6107,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "session_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -5910,7 +6313,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "description": "Optional resourceVersion bookmark used to resume a previous stream.",
@@ -6022,7 +6425,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "explode": false,
@@ -6231,7 +6634,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "header",
@@ -6479,13 +6882,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "terminal_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -6682,13 +7085,13 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "path",
             "name": "terminal_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -6888,14 +7291,14 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "description": "Terminal identifier.",
             "in": "path",
             "name": "terminal_id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
           }
         ],
         "responses": {
@@ -7124,13 +7527,7 @@
             "in": "path",
             "name": "machine_id",
             "required": true,
-            "schema": { "type": "string" }
-          },
-          {
-            "in": "header",
-            "name": "If-Match",
-            "required": true,
-            "schema": { "type": "string" }
+            "schema": { "$ref": "#/components/schemas/MachineIDPathSegment" }
           },
           {
             "in": "header",
@@ -7387,6 +7784,616 @@
           }
         },
         "summary": "Wake a sleeping machine",
+        "tags": ["Machine Lifecycle"]
+      }
+    },
+    "/v1/orgs/{org_id}/usage": {
+      "get": {
+        "operationId": "getOrgUsage",
+        "parameters": [
+          {
+            "description": "Organization ID.",
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
+          },
+          {
+            "description": "Billing period start (YYYY-MM-DD). Defaults to first of current month.",
+            "explode": false,
+            "in": "query",
+            "name": "period_start",
+            "schema": {
+              "description": "Billing period start (YYYY-MM-DD). Defaults to first of current month.",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UsageBody" }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error_code": "AUTH_INVALID",
+                      "message": "invalid Dedalus API key",
+                      "retryable": false
+                    }
+                  },
+                  "missing_key": {
+                    "value": {
+                      "error_code": "AUTH_REQUIRED",
+                      "message": "missing Dedalus API key",
+                      "retryable": false
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Authentication required"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "org_mismatch": {
+                    "value": {
+                      "error_code": "AUTH_ORG_MISMATCH",
+                      "message": "org scope does not match API key ownership",
+                      "retryable": false
+                    }
+                  },
+                  "scope_forbidden": {
+                    "value": {
+                      "error_code": "AUTH_SCOPE_FORBIDDEN",
+                      "message": "internal service authorization is required",
+                      "retryable": false
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Billing ledger unavailable"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": { "$ref": "#/components/schemas/ErrorModel" }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Get org billed machine usage",
+        "tags": ["Machine Lifecycle"]
+      }
+    },
+    "/v1/orgs/{org_id}/usage/machines": {
+      "get": {
+        "operationId": "listOrgMachineUsageEvidence",
+        "parameters": [
+          {
+            "description": "Organization ID.",
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
+          },
+          {
+            "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+            "explode": false,
+            "in": "query",
+            "name": "period_start",
+            "schema": {
+              "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+            "explode": false,
+            "in": "query",
+            "name": "period_end",
+            "schema": {
+              "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional machine ID filter.",
+            "explode": false,
+            "in": "query",
+            "name": "machine_id",
+            "schema": {
+              "description": "Optional machine ID filter.",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Evidence granularity: hour or day. Defaults to hour.",
+            "explode": false,
+            "in": "query",
+            "name": "granularity",
+            "schema": {
+              "description": "Evidence granularity: hour or day. Defaults to hour.",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MachineUsageBody" }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error_code": "AUTH_INVALID",
+                      "message": "invalid Dedalus API key",
+                      "retryable": false
+                    }
+                  },
+                  "missing_key": {
+                    "value": {
+                      "error_code": "AUTH_REQUIRED",
+                      "message": "missing Dedalus API key",
+                      "retryable": false
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Authentication required"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "org_mismatch": {
+                    "value": {
+                      "error_code": "AUTH_ORG_MISMATCH",
+                      "message": "org scope does not match API key ownership",
+                      "retryable": false
+                    }
+                  },
+                  "scope_forbidden": {
+                    "value": {
+                      "error_code": "AUTH_SCOPE_FORBIDDEN",
+                      "message": "internal service authorization is required",
+                      "retryable": false
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Billing ledger unavailable"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": { "$ref": "#/components/schemas/ErrorModel" }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "List machine usage evidence",
+        "tags": ["Machine Lifecycle"]
+      }
+    },
+    "/v1/orgs/{org_id}/usage/storage/machines": {
+      "get": {
+        "operationId": "listOrgMachineStorageUsageEvidence",
+        "parameters": [
+          {
+            "description": "Organization ID.",
+            "in": "path",
+            "name": "org_id",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
+          },
+          {
+            "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+            "explode": false,
+            "in": "query",
+            "name": "period_start",
+            "schema": {
+              "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+            "explode": false,
+            "in": "query",
+            "name": "period_end",
+            "schema": {
+              "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional machine ID filter.",
+            "explode": false,
+            "in": "query",
+            "name": "machine_id",
+            "schema": {
+              "description": "Optional machine ID filter.",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachineStorageUsageBody"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalid_key": {
+                    "value": {
+                      "error_code": "AUTH_INVALID",
+                      "message": "invalid Dedalus API key",
+                      "retryable": false
+                    }
+                  },
+                  "missing_key": {
+                    "value": {
+                      "error_code": "AUTH_REQUIRED",
+                      "message": "missing Dedalus API key",
+                      "retryable": false
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Authentication required"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "org_mismatch": {
+                    "value": {
+                      "error_code": "AUTH_ORG_MISMATCH",
+                      "message": "org scope does not match API key ownership",
+                      "retryable": false
+                    }
+                  },
+                  "scope_forbidden": {
+                    "value": {
+                      "error_code": "AUTH_SCOPE_FORBIDDEN",
+                      "message": "internal service authorization is required",
+                      "retryable": false
+                    }
+                  }
+                },
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Internal server error"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "details": {
+                      "additionalProperties": { "type": "string" },
+                      "type": "object"
+                    },
+                    "error_code": { "type": "string" },
+                    "message": { "type": "string" },
+                    "retry_after_ms": { "format": "int64", "type": "integer" },
+                    "retryable": { "type": "boolean" }
+                  },
+                  "required": ["error_code", "message", "retryable"],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Billing ledger unavailable"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": { "$ref": "#/components/schemas/ErrorModel" }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "List machine storage usage evidence",
         "tags": ["Machine Lifecycle"]
       }
     }

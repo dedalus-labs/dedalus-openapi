@@ -396,6 +396,135 @@
         ],
         "type": "object"
       },
+      "MachineComputeUsageBody": {
+        "additionalProperties": false,
+        "properties": {
+          "granularity": {
+            "description": "Usage breakdown granularity used for rows: hour or day.",
+            "type": "string"
+          },
+          "period_end": {
+            "description": "Exclusive usage period end.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "period_start": {
+            "description": "Inclusive usage period start.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "rows": {
+            "description": "Machine-level compute usage breakdown rows.",
+            "items": {
+              "$ref": "#/components/schemas/MachineComputeUsageRowBody"
+            },
+            "type": ["array", "null"]
+          }
+        },
+        "required": ["granularity", "period_start", "period_end", "rows"],
+        "type": "object"
+      },
+      "MachineComputeUsageRowBody": {
+        "additionalProperties": false,
+        "properties": {
+          "awake_seconds": {
+            "description": "Machine-awake seconds in this bucket.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "bucket_end": {
+            "description": "Exclusive usage bucket end.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "bucket_start": {
+            "description": "Inclusive usage bucket start.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "cpu_millicore_seconds": {
+            "description": "Requested vCPU millicores multiplied by guest-owned active CPU seconds.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "last_window_end": {
+            "description": "Latest raw window_end represented by this row.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "latest_stripe_emitted_at": {
+            "description": "Latest Stripe emission timestamp for linked org buckets, when emitted.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "machine_id": {
+            "description": "Machine identifier.",
+            "type": "string"
+          },
+          "memory_mib_seconds": {
+            "description": "Requested memory MiB multiplied by running allocation seconds.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "org_metering_bucket_ids": {
+            "description": "Org compute bucket IDs this row contributes to.",
+            "items": { "type": "string" },
+            "type": ["array", "null"]
+          },
+          "requested_memory_mib": {
+            "description": "Requested memory for this shape, in MiB.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "requested_storage_gib": {
+            "description": "Requested storage for this shape, in GiB.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "requested_vcpu": {
+            "description": "Requested vCPU for this shape.",
+            "format": "double",
+            "type": "number"
+          },
+          "spec_fingerprint": {
+            "description": "Stable fingerprint for the requested machine shape.",
+            "type": "string"
+          },
+          "stripe_cpu_identifiers": {
+            "description": "Stripe CPU meter event identifiers linked to those org buckets.",
+            "items": { "type": "string" },
+            "type": ["array", "null"]
+          },
+          "stripe_memory_identifiers": {
+            "description": "Stripe memory meter event identifiers linked to those org buckets.",
+            "items": { "type": "string" },
+            "type": ["array", "null"]
+          },
+          "window_count": {
+            "description": "Raw usage windows compacted into this row.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "machine_id",
+          "spec_fingerprint",
+          "requested_vcpu",
+          "requested_memory_mib",
+          "requested_storage_gib",
+          "bucket_start",
+          "bucket_end",
+          "awake_seconds",
+          "cpu_millicore_seconds",
+          "memory_mib_seconds",
+          "window_count",
+          "last_window_end",
+          "org_metering_bucket_ids",
+          "stripe_cpu_identifiers",
+          "stripe_memory_identifiers"
+        ],
+        "type": "object"
+      },
       "MachineIDPathSegment": {
         "maxLength": 253,
         "minLength": 4,
@@ -459,19 +588,19 @@
         "additionalProperties": false,
         "properties": {
           "period_end": {
-            "description": "Exclusive evidence period end.",
+            "description": "Exclusive usage period end.",
             "format": "date-time",
             "type": "string"
           },
           "period_start": {
-            "description": "Inclusive evidence period start.",
+            "description": "Inclusive usage period start.",
             "format": "date-time",
             "type": "string"
           },
           "rows": {
-            "description": "Machine-level storage usage evidence rows.",
+            "description": "Machine-level storage usage breakdown rows.",
             "items": {
-              "$ref": "#/components/schemas/MachineStorageUsageEvidenceBody"
+              "$ref": "#/components/schemas/MachineStorageUsageRowBody"
             },
             "type": ["array", "null"]
           }
@@ -479,16 +608,16 @@
         "required": ["period_start", "period_end", "rows"],
         "type": "object"
       },
-      "MachineStorageUsageEvidenceBody": {
+      "MachineStorageUsageRowBody": {
         "additionalProperties": false,
         "properties": {
           "bucket_end": {
-            "description": "Exclusive evidence bucket end.",
+            "description": "Exclusive usage bucket end.",
             "format": "date-time",
             "type": "string"
           },
           "bucket_start": {
-            "description": "Inclusive evidence bucket start.",
+            "description": "Inclusive usage bucket start.",
             "format": "date-time",
             "type": "string"
           },
@@ -507,7 +636,7 @@
             "type": "string"
           },
           "org_metering_bucket_id": {
-            "description": "Org storage bucket ID this evidence row contributes to.",
+            "description": "Org storage bucket ID this row contributes to.",
             "type": "string"
           },
           "storage_mib_seconds": {
@@ -528,135 +657,6 @@
           "storage_mib_seconds",
           "org_metering_bucket_id",
           "stripe_storage_identifier"
-        ],
-        "type": "object"
-      },
-      "MachineUsageBody": {
-        "additionalProperties": false,
-        "properties": {
-          "granularity": {
-            "description": "Evidence granularity used for rows: hour or day.",
-            "type": "string"
-          },
-          "period_end": {
-            "description": "Exclusive evidence period end.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "period_start": {
-            "description": "Inclusive evidence period start.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "rows": {
-            "description": "Machine-level usage evidence rows.",
-            "items": {
-              "$ref": "#/components/schemas/MachineUsageEvidenceBody"
-            },
-            "type": ["array", "null"]
-          }
-        },
-        "required": ["granularity", "period_start", "period_end", "rows"],
-        "type": "object"
-      },
-      "MachineUsageEvidenceBody": {
-        "additionalProperties": false,
-        "properties": {
-          "awake_seconds": {
-            "description": "Machine-awake seconds in this bucket.",
-            "format": "int64",
-            "type": "integer"
-          },
-          "bucket_end": {
-            "description": "Exclusive evidence bucket end.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "bucket_start": {
-            "description": "Inclusive evidence bucket start.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "cpu_millicore_seconds": {
-            "description": "Requested vCPU millicores multiplied by active CPU seconds.",
-            "format": "int64",
-            "type": "integer"
-          },
-          "last_window_end": {
-            "description": "Latest raw window_end represented by this row.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "latest_stripe_emitted_at": {
-            "description": "Latest Stripe emission timestamp for linked org buckets, when emitted.",
-            "format": "date-time",
-            "type": "string"
-          },
-          "machine_id": {
-            "description": "Machine identifier.",
-            "type": "string"
-          },
-          "memory_mib_seconds": {
-            "description": "Requested memory MiB multiplied by awake seconds.",
-            "format": "int64",
-            "type": "integer"
-          },
-          "org_metering_bucket_ids": {
-            "description": "Org compute bucket IDs this evidence row contributes to.",
-            "items": { "type": "string" },
-            "type": ["array", "null"]
-          },
-          "requested_memory_mib": {
-            "description": "Requested memory for this shape, in MiB.",
-            "format": "int32",
-            "type": "integer"
-          },
-          "requested_storage_gib": {
-            "description": "Requested storage for this shape, in GiB.",
-            "format": "int32",
-            "type": "integer"
-          },
-          "requested_vcpu": {
-            "description": "Requested vCPU for this shape.",
-            "format": "double",
-            "type": "number"
-          },
-          "spec_fingerprint": {
-            "description": "Stable fingerprint for the requested machine shape.",
-            "type": "string"
-          },
-          "stripe_cpu_identifiers": {
-            "description": "Stripe CPU meter event identifiers linked to those org buckets.",
-            "items": { "type": "string" },
-            "type": ["array", "null"]
-          },
-          "stripe_memory_identifiers": {
-            "description": "Stripe memory meter event identifiers linked to those org buckets.",
-            "items": { "type": "string" },
-            "type": ["array", "null"]
-          },
-          "window_count": {
-            "description": "Raw usage windows compacted into this evidence row.",
-            "format": "int64",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "machine_id",
-          "spec_fingerprint",
-          "requested_vcpu",
-          "requested_memory_mib",
-          "requested_storage_gib",
-          "bucket_start",
-          "bucket_end",
-          "awake_seconds",
-          "cpu_millicore_seconds",
-          "memory_mib_seconds",
-          "window_count",
-          "last_window_end",
-          "org_metering_bucket_ids",
-          "stripe_cpu_identifiers",
-          "stripe_memory_identifiers"
         ],
         "type": "object"
       },
@@ -1084,7 +1084,7 @@
             "type": "integer"
           },
           "billed_cpu_millicore_seconds": {
-            "description": "Closed requested vCPU millicores multiplied by active CPU seconds for the period.",
+            "description": "Closed requested vCPU millicores multiplied by guest-owned active CPU seconds for the period.",
             "format": "int64",
             "type": "integer"
           },
@@ -1094,7 +1094,7 @@
             "type": "integer"
           },
           "billed_memory_mib_seconds": {
-            "description": "Closed requested memory MiB multiplied by awake seconds for the period.",
+            "description": "Closed requested memory MiB multiplied by running allocation seconds for the period.",
             "format": "int64",
             "type": "integer"
           },
@@ -7990,17 +7990,10 @@
         }
       }
     },
-    "/v1/orgs/{org_id}/usage": {
+    "/v1/usage": {
       "get": {
-        "operationId": "getOrgUsage",
+        "operationId": "getUsage",
         "parameters": [
-          {
-            "description": "Organization ID.",
-            "in": "path",
-            "name": "org_id",
-            "required": true,
-            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
-          },
           {
             "description": "Billing period start (YYYY-MM-DD). Defaults to first of current month.",
             "explode": false,
@@ -8172,45 +8165,38 @@
             "description": "Error"
           }
         },
-        "summary": "Get org billed machine usage",
-        "tags": ["Machine Lifecycle"],
+        "summary": "Get usage summary",
+        "tags": ["Usage", "Machine Lifecycle"],
         "x-stainless-snippets": {
-          "typescript": "import Dedalus from 'dedalus';\n\nconst client = new Dedalus({\n  apiKey: process.env['DEDALUS_API_KEY'], // This is the default and can be omitted\n});\n\nconst orgUsage = await client.orgs.usage.retrieve({ org_id: 'org_id' });\n\nconsole.log(orgUsage.billed_awake_seconds);",
-          "python": "import os\nfrom dedalus_sdk import Dedalus\n\nclient = Dedalus(\n    api_key=os.environ.get(\"DEDALUS_API_KEY\"),  # This is the default and can be omitted\n)\norg_usage = client.orgs.usage.retrieve(\n    org_id=\"org_id\",\n)\nprint(org_usage.billed_awake_seconds)",
-          "go": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/dedalus-labs/dedalus-go\"\n\t\"github.com/dedalus-labs/dedalus-go/option\"\n)\n\nfunc main() {\n\tclient := dedalus.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\torgUsage, err := client.Orgs.Usage.Get(context.TODO(), dedalus.OrgUsageGetParams{\n\t\tOrgID: \"org_id\",\n\t})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", orgUsage.BilledAwakeSeconds)\n}\n",
-          "cli": "dedalus orgs:usage retrieve \\\n  --api-key 'My API Key' \\\n  --org-id org_id",
-          "curl": "curl https://dcs.dedaluslabs.ai/v1/orgs/$ORG_ID/usage \\\n    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
+          "typescript": "import Dedalus from 'dedalus';\n\nconst client = new Dedalus({\n  apiKey: process.env['DEDALUS_API_KEY'], // This is the default and can be omitted\n});\n\nconst orgUsage = await client.usage.retrieve();\n\nconsole.log(orgUsage.billed_awake_seconds);",
+          "python": "import os\nfrom dedalus_sdk import Dedalus\n\nclient = Dedalus(\n    api_key=os.environ.get(\"DEDALUS_API_KEY\"),  # This is the default and can be omitted\n)\norg_usage = client.usage.retrieve()\nprint(org_usage.billed_awake_seconds)",
+          "go": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/dedalus-labs/dedalus-go\"\n\t\"github.com/dedalus-labs/dedalus-go/option\"\n)\n\nfunc main() {\n\tclient := dedalus.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\torgUsage, err := client.Usage.Get(context.TODO(), dedalus.UsageGetParams{})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", orgUsage.BilledAwakeSeconds)\n}\n",
+          "cli": "dedalus usage retrieve \\\n  --api-key 'My API Key'",
+          "curl": "curl https://dcs.dedaluslabs.ai/v1/usage \\\n    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
         }
       }
     },
-    "/v1/orgs/{org_id}/usage/machines": {
+    "/v1/usage/machines/compute": {
       "get": {
-        "operationId": "listOrgMachineUsageEvidence",
+        "operationId": "listMachineComputeUsage",
         "parameters": [
           {
-            "description": "Organization ID.",
-            "in": "path",
-            "name": "org_id",
-            "required": true,
-            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
-          },
-          {
-            "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+            "description": "Usage period start (YYYY-MM-DD). Defaults to first of current month.",
             "explode": false,
             "in": "query",
             "name": "period_start",
             "schema": {
-              "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+              "description": "Usage period start (YYYY-MM-DD). Defaults to first of current month.",
               "type": "string"
             }
           },
           {
-            "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+            "description": "Last UTC usage date to include (YYYY-MM-DD). Defaults to current time.",
             "explode": false,
             "in": "query",
             "name": "period_end",
             "schema": {
-              "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+              "description": "Last UTC usage date to include (YYYY-MM-DD). Defaults to current time.",
               "type": "string"
             }
           },
@@ -8225,12 +8211,12 @@
             }
           },
           {
-            "description": "Evidence granularity: hour or day. Defaults to hour.",
+            "description": "Usage breakdown granularity: hour or day. Defaults to hour.",
             "explode": false,
             "in": "query",
             "name": "granularity",
             "schema": {
-              "description": "Evidence granularity: hour or day. Defaults to hour.",
+              "description": "Usage breakdown granularity: hour or day. Defaults to hour.",
               "type": "string"
             }
           }
@@ -8239,7 +8225,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/MachineUsageBody" }
+                "schema": {
+                  "$ref": "#/components/schemas/MachineComputeUsageBody"
+                }
               }
             },
             "description": "OK"
@@ -8395,45 +8383,38 @@
             "description": "Error"
           }
         },
-        "summary": "List machine usage evidence",
-        "tags": ["Machine Lifecycle"],
+        "summary": "List machine compute usage breakdown",
+        "tags": ["Usage", "Machine Lifecycle"],
         "x-stainless-snippets": {
-          "typescript": "import Dedalus from 'dedalus';\n\nconst client = new Dedalus({\n  apiKey: process.env['DEDALUS_API_KEY'], // This is the default and can be omitted\n});\n\nconst machineUsage = await client.orgs.usage.getMachineUsage({ org_id: 'org_id' });\n\nconsole.log(machineUsage.granularity);",
-          "python": "import os\nfrom dedalus_sdk import Dedalus\n\nclient = Dedalus(\n    api_key=os.environ.get(\"DEDALUS_API_KEY\"),  # This is the default and can be omitted\n)\nmachine_usage = client.orgs.usage.get_machine_usage(\n    org_id=\"org_id\",\n)\nprint(machine_usage.granularity)",
-          "go": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/dedalus-labs/dedalus-go\"\n\t\"github.com/dedalus-labs/dedalus-go/option\"\n)\n\nfunc main() {\n\tclient := dedalus.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tmachineUsage, err := client.Orgs.Usage.GetMachineUsage(context.TODO(), dedalus.OrgUsageGetMachineUsageParams{\n\t\tOrgID: \"org_id\",\n\t})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", machineUsage.Granularity)\n}\n",
-          "cli": "dedalus orgs:usage get-machine-usage \\\n  --api-key 'My API Key' \\\n  --org-id org_id",
-          "curl": "curl https://dcs.dedaluslabs.ai/v1/orgs/$ORG_ID/usage/machines \\\n    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
+          "typescript": "import Dedalus from 'dedalus';\n\nconst client = new Dedalus({\n  apiKey: process.env['DEDALUS_API_KEY'], // This is the default and can be omitted\n});\n\nconst machineComputeUsage = await client.usage.machineCompute();\n\nconsole.log(machineComputeUsage.granularity);",
+          "python": "import os\nfrom dedalus_sdk import Dedalus\n\nclient = Dedalus(\n    api_key=os.environ.get(\"DEDALUS_API_KEY\"),  # This is the default and can be omitted\n)\nmachine_compute_usage = client.usage.machine_compute()\nprint(machine_compute_usage.granularity)",
+          "go": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/dedalus-labs/dedalus-go\"\n\t\"github.com/dedalus-labs/dedalus-go/option\"\n)\n\nfunc main() {\n\tclient := dedalus.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tmachineComputeUsage, err := client.Usage.MachineCompute(context.TODO(), dedalus.UsageMachineComputeParams{})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", machineComputeUsage.Granularity)\n}\n",
+          "cli": "dedalus usage machine-compute \\\n  --api-key 'My API Key'",
+          "curl": "curl https://dcs.dedaluslabs.ai/v1/usage/machines/compute \\\n    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
         }
       }
     },
-    "/v1/orgs/{org_id}/usage/storage/machines": {
+    "/v1/usage/machines/storage": {
       "get": {
-        "operationId": "listOrgMachineStorageUsageEvidence",
+        "operationId": "listMachineStorageUsage",
         "parameters": [
           {
-            "description": "Organization ID.",
-            "in": "path",
-            "name": "org_id",
-            "required": true,
-            "schema": { "$ref": "#/components/schemas/PublicPathSegment" }
-          },
-          {
-            "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+            "description": "Usage period start (YYYY-MM-DD). Defaults to first of current month.",
             "explode": false,
             "in": "query",
             "name": "period_start",
             "schema": {
-              "description": "Evidence period start (YYYY-MM-DD). Defaults to first of current month.",
+              "description": "Usage period start (YYYY-MM-DD). Defaults to first of current month.",
               "type": "string"
             }
           },
           {
-            "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+            "description": "Last UTC usage date to include (YYYY-MM-DD). Defaults to current time.",
             "explode": false,
             "in": "query",
             "name": "period_end",
             "schema": {
-              "description": "Last UTC evidence date to include (YYYY-MM-DD). Defaults to current time.",
+              "description": "Last UTC usage date to include (YYYY-MM-DD). Defaults to current time.",
               "type": "string"
             }
           },
@@ -8610,14 +8591,14 @@
             "description": "Error"
           }
         },
-        "summary": "List machine storage usage evidence",
-        "tags": ["Machine Lifecycle"],
+        "summary": "List machine storage usage breakdown",
+        "tags": ["Usage", "Machine Lifecycle"],
         "x-stainless-snippets": {
-          "typescript": "import Dedalus from 'dedalus';\n\nconst client = new Dedalus({\n  apiKey: process.env['DEDALUS_API_KEY'], // This is the default and can be omitted\n});\n\nconst machineStorageUsage = await client.orgs.usage.getMachineStorageUsage({ org_id: 'org_id' });\n\nconsole.log(machineStorageUsage.period_end);",
-          "python": "import os\nfrom dedalus_sdk import Dedalus\n\nclient = Dedalus(\n    api_key=os.environ.get(\"DEDALUS_API_KEY\"),  # This is the default and can be omitted\n)\nmachine_storage_usage = client.orgs.usage.get_machine_storage_usage(\n    org_id=\"org_id\",\n)\nprint(machine_storage_usage.period_end)",
-          "go": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/dedalus-labs/dedalus-go\"\n\t\"github.com/dedalus-labs/dedalus-go/option\"\n)\n\nfunc main() {\n\tclient := dedalus.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tmachineStorageUsage, err := client.Orgs.Usage.GetMachineStorageUsage(context.TODO(), dedalus.OrgUsageGetMachineStorageUsageParams{\n\t\tOrgID: \"org_id\",\n\t})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", machineStorageUsage.PeriodEnd)\n}\n",
-          "cli": "dedalus orgs:usage get-machine-storage-usage \\\n  --api-key 'My API Key' \\\n  --org-id org_id",
-          "curl": "curl https://dcs.dedaluslabs.ai/v1/orgs/$ORG_ID/usage/storage/machines \\\n    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
+          "typescript": "import Dedalus from 'dedalus';\n\nconst client = new Dedalus({\n  apiKey: process.env['DEDALUS_API_KEY'], // This is the default and can be omitted\n});\n\nconst machineStorageUsage = await client.usage.machineStorage();\n\nconsole.log(machineStorageUsage.period_end);",
+          "python": "import os\nfrom dedalus_sdk import Dedalus\n\nclient = Dedalus(\n    api_key=os.environ.get(\"DEDALUS_API_KEY\"),  # This is the default and can be omitted\n)\nmachine_storage_usage = client.usage.machine_storage()\nprint(machine_storage_usage.period_end)",
+          "go": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/dedalus-labs/dedalus-go\"\n\t\"github.com/dedalus-labs/dedalus-go/option\"\n)\n\nfunc main() {\n\tclient := dedalus.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tmachineStorageUsage, err := client.Usage.MachineStorage(context.TODO(), dedalus.UsageMachineStorageParams{})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", machineStorageUsage.PeriodEnd)\n}\n",
+          "cli": "dedalus usage machine-storage \\\n  --api-key 'My API Key'",
+          "curl": "curl https://dcs.dedaluslabs.ai/v1/usage/machines/storage \\\n    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
         }
       }
     }

@@ -111,6 +111,26 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.MachineListPage
+
+                    import com.dedalus.api.models.machines.MachineListParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val page: MachineListPage = client.machines().list()
+
+                    }",
                   cli: "dedalus machines list \\
 
                     \  --api-key 'My API Key'",
@@ -258,6 +278,36 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.CreateParams
+
+                    import com.dedalus.api.models.machines.Machine
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: CreateParams = CreateParams.builder()
+
+                    \        .memoryMiB(0L)
+
+                    \        .storageGiB(0L)
+
+                    \        .vcpu(0.0)
+
+                    \        .build()
+
+                    \    val machine: Machine = client.machines().create(params)
+
+                    }",
                   cli: "dedalus machines create \\
 
                     \  --api-key 'My API Key' \\
@@ -401,6 +451,32 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.Machine
+
+                    import com.dedalus.api.models.machines.MachineDeleteParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: MachineDeleteParams = MachineDeleteParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .build()
+
+                    \    val machine: Machine = client.machines().delete(params)
+
+                    }",
                   cli: "dedalus machines delete \\
 
                     \  --api-key 'My API Key' \\
@@ -525,6 +601,32 @@
                     \        Machine machine = client.machines().retrieve(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.Machine
+
+                    import com.dedalus.api.models.machines.MachineRetrieveParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: MachineRetrieveParams = MachineRetrieveParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .build()
+
+                    \    val machine: Machine = client.machines().retrieve(params)
 
                     }",
                   cli: "dedalus machines retrieve \\
@@ -656,6 +758,36 @@
                     \        Machine machine = client.machines().update(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.Machine
+
+                    import com.dedalus.api.models.machines.MachineUpdateParams
+
+                    import com.dedalus.api.models.machines.UpdateParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: MachineUpdateParams = MachineUpdateParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .updateParams(UpdateParams.builder().build())
+
+                    \        .build()
+
+                    \    val machine: Machine = client.machines().update(params)
 
                     }",
                   cli: "dedalus machines update \\
@@ -796,6 +928,32 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.artifacts.ArtifactListPage
+
+                    import com.dedalus.api.models.machines.artifacts.ArtifactListParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: ArtifactListParams = ArtifactListParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .build()
+
+                    \    val page: ArtifactListPage = client.machines().artifacts().list(params)
+
+                    }",
                   cli: "dedalus machines:artifacts list \\
 
                     \  --api-key 'My API Key' \\
@@ -933,6 +1091,34 @@
                     \        Artifact artifact = client.machines().artifacts().delete(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.artifacts.Artifact
+
+                    import com.dedalus.api.models.machines.artifacts.ArtifactDeleteParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: ArtifactDeleteParams = ArtifactDeleteParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .artifactId(\"artifact_id\")
+
+                    \        .build()
+
+                    \    val artifact: Artifact = client.machines().artifacts().delete(params)
 
                     }",
                   cli: "dedalus machines:artifacts delete \\
@@ -1075,6 +1261,34 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.artifacts.Artifact
+
+                    import com.dedalus.api.models.machines.artifacts.ArtifactRetrieveParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: ArtifactRetrieveParams = ArtifactRetrieveParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .artifactId(\"artifact_id\")
+
+                    \        .build()
+
+                    \    val artifact: Artifact = client.machines().artifacts().retrieve(params)
+
+                    }",
                   cli: "dedalus machines:artifacts retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -1207,6 +1421,32 @@
                     \        ExecutionListPage page = client.machines().executions().list(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.executions.ExecutionListPage
+
+                    import com.dedalus.api.models.machines.executions.ExecutionListParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: ExecutionListParams = ExecutionListParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .build()
+
+                    \    val page: ExecutionListPage = client.machines().executions().list(params)
 
                     }",
                   cli: "dedalus machines:executions list \\
@@ -1352,6 +1592,38 @@
                     \        Execution execution = client.machines().executions().create(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.executions.Execution
+
+                    import com.dedalus.api.models.machines.executions.ExecutionCreateParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: ExecutionCreateParams = ExecutionCreateParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .executionCreateParams(ExecutionCreateParams.builder()
+
+                    \            .addCommand(\"string\")
+
+                    \            .build())
+
+                    \        .build()
+
+                    \    val execution: Execution = client.machines().executions().create(params)
 
                     }",
                   cli: "dedalus machines:executions create \\
@@ -1507,6 +1779,34 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.executions.Execution
+
+                    import com.dedalus.api.models.machines.executions.ExecutionDeleteParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: ExecutionDeleteParams = ExecutionDeleteParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .executionId(\"execution_id\")
+
+                    \        .build()
+
+                    \    val execution: Execution = client.machines().executions().delete(params)
+
+                    }",
                   cli: "dedalus machines:executions delete \\
 
                     \  --api-key 'My API Key' \\
@@ -1645,6 +1945,34 @@
                     \        Execution execution = client.machines().executions().retrieve(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.executions.Execution
+
+                    import com.dedalus.api.models.machines.executions.ExecutionRetrieveParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: ExecutionRetrieveParams = ExecutionRetrieveParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .executionId(\"execution_id\")
+
+                    \        .build()
+
+                    \    val execution: Execution = client.machines().executions().retrieve(params)
 
                     }",
                   cli: "dedalus machines:executions retrieve \\
@@ -1793,6 +2121,34 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.executions.ExecutionEventsPage
+
+                    import com.dedalus.api.models.machines.executions.ExecutionEventsParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: ExecutionEventsParams = ExecutionEventsParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .executionId(\"execution_id\")
+
+                    \        .build()
+
+                    \    val page: ExecutionEventsPage = client.machines().executions().events(params)
+
+                    }",
                   cli: "dedalus machines:executions events \\
 
                     \  --api-key 'My API Key' \\
@@ -1934,6 +2290,34 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.executions.ExecutionOutput
+
+                    import com.dedalus.api.models.machines.executions.ExecutionOutputParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: ExecutionOutputParams = ExecutionOutputParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .executionId(\"execution_id\")
+
+                    \        .build()
+
+                    \    val executionOutput: ExecutionOutput = client.machines().executions().output(params)
+
+                    }",
                   cli: "dedalus machines:executions output \\
 
                     \  --api-key 'My API Key' \\
@@ -2066,6 +2450,32 @@
                     \        PreviewListPage page = client.machines().previews().list(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.previews.PreviewListPage
+
+                    import com.dedalus.api.models.machines.previews.PreviewListParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: PreviewListParams = PreviewListParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .build()
+
+                    \    val page: PreviewListPage = client.machines().previews().list(params)
 
                     }",
                   cli: "dedalus machines:previews list \\
@@ -2205,6 +2615,38 @@
                     \        Preview preview = client.machines().previews().create(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.previews.Preview
+
+                    import com.dedalus.api.models.machines.previews.PreviewCreateParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: PreviewCreateParams = PreviewCreateParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .previewCreateParams(PreviewCreateParams.builder()
+
+                    \            .port(0L)
+
+                    \            .build())
+
+                    \        .build()
+
+                    \    val preview: Preview = client.machines().previews().create(params)
 
                     }",
                   cli: "dedalus machines:previews create \\
@@ -2356,6 +2798,34 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.previews.Preview
+
+                    import com.dedalus.api.models.machines.previews.PreviewDeleteParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: PreviewDeleteParams = PreviewDeleteParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .previewId(\"preview_id\")
+
+                    \        .build()
+
+                    \    val preview: Preview = client.machines().previews().delete(params)
+
+                    }",
                   cli: "dedalus machines:previews delete \\
 
                     \  --api-key 'My API Key' \\
@@ -2496,6 +2966,34 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.previews.Preview
+
+                    import com.dedalus.api.models.machines.previews.PreviewRetrieveParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: PreviewRetrieveParams = PreviewRetrieveParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .previewId(\"preview_id\")
+
+                    \        .build()
+
+                    \    val preview: Preview = client.machines().previews().retrieve(params)
+
+                    }",
                   cli: "dedalus machines:previews retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -2623,6 +3121,32 @@
                     \        Machine machine = client.machines().sleep(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.Machine
+
+                    import com.dedalus.api.models.machines.MachineSleepParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: MachineSleepParams = MachineSleepParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .build()
+
+                    \    val machine: Machine = client.machines().sleep(params)
 
                     }",
                   cli: "dedalus machines sleep \\
@@ -2757,6 +3281,32 @@
                     \        SshListPage page = client.machines().ssh().list(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.ssh.SshListPage
+
+                    import com.dedalus.api.models.machines.ssh.SshListParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: SshListParams = SshListParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .build()
+
+                    \    val page: SshListPage = client.machines().ssh().list(params)
 
                     }",
                   cli: "dedalus machines:ssh list \\
@@ -2904,6 +3454,40 @@
                     \        SshSession sshSession = client.machines().ssh().create(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.ssh.SshCreateParams
+
+                    import com.dedalus.api.models.machines.ssh.SshSession
+
+                    import com.dedalus.api.models.machines.ssh.SshSessionCreateParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: SshCreateParams = SshCreateParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .sshSessionCreateParams(SshSessionCreateParams.builder()
+
+                    \            .publicKey(\"public_key\")
+
+                    \            .build())
+
+                    \        .build()
+
+                    \    val sshSession: SshSession = client.machines().ssh().create(params)
 
                     }",
                   cli: "dedalus machines:ssh create \\
@@ -3055,6 +3639,34 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.ssh.SshDeleteParams
+
+                    import com.dedalus.api.models.machines.ssh.SshSession
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: SshDeleteParams = SshDeleteParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .sessionId(\"session_id\")
+
+                    \        .build()
+
+                    \    val sshSession: SshSession = client.machines().ssh().delete(params)
+
+                    }",
                   cli: "dedalus machines:ssh delete \\
 
                     \  --api-key 'My API Key' \\
@@ -3195,6 +3807,34 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.ssh.SshRetrieveParams
+
+                    import com.dedalus.api.models.machines.ssh.SshSession
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: SshRetrieveParams = SshRetrieveParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .sessionId(\"session_id\")
+
+                    \        .build()
+
+                    \    val sshSession: SshSession = client.machines().ssh().retrieve(params)
+
+                    }",
                   cli: "dedalus machines:ssh retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -3333,6 +3973,34 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.core.http.StreamResponse
+
+                    import com.dedalus.api.models.machines.Machine
+
+                    import com.dedalus.api.models.machines.MachineWatchParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: MachineWatchParams = MachineWatchParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .build()
+
+                    \    val machine: StreamResponse<Machine> = client.machines().watchStreaming(params)
+
+                    }",
                   cli: "dedalus machines watch \\
 
                     \  --api-key 'My API Key' \\
@@ -3463,6 +4131,32 @@
                     \        TerminalListPage page = client.machines().terminals().list(params);
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.terminals.TerminalListPage
+
+                    import com.dedalus.api.models.machines.terminals.TerminalListParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: TerminalListParams = TerminalListParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .build()
+
+                    \    val page: TerminalListPage = client.machines().terminals().list(params)
 
                     }",
                   cli: "dedalus machines:terminals list \\
@@ -3618,6 +4312,40 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.terminals.Terminal
+
+                    import com.dedalus.api.models.machines.terminals.TerminalCreateParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: TerminalCreateParams = TerminalCreateParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .terminalCreateParams(TerminalCreateParams.builder()
+
+                    \            .height(0L)
+
+                    \            .width(0L)
+
+                    \            .build())
+
+                    \        .build()
+
+                    \    val terminal: Terminal = client.machines().terminals().create(params)
+
+                    }",
                   cli: "dedalus machines:terminals create \\
 
                     \  --api-key 'My API Key' \\
@@ -3771,6 +4499,34 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.terminals.Terminal
+
+                    import com.dedalus.api.models.machines.terminals.TerminalDeleteParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: TerminalDeleteParams = TerminalDeleteParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .terminalId(\"terminal_id\")
+
+                    \        .build()
+
+                    \    val terminal: Terminal = client.machines().terminals().delete(params)
+
+                    }",
                   cli: "dedalus machines:terminals delete \\
 
                     \  --api-key 'My API Key' \\
@@ -3911,6 +4667,34 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.terminals.Terminal
+
+                    import com.dedalus.api.models.machines.terminals.TerminalRetrieveParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: TerminalRetrieveParams = TerminalRetrieveParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .terminalId(\"terminal_id\")
+
+                    \        .build()
+
+                    \    val terminal: Terminal = client.machines().terminals().retrieve(params)
+
+                    }",
                   cli: "dedalus machines:terminals retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -4041,6 +4825,32 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.machines.Machine
+
+                    import com.dedalus.api.models.machines.MachineWakeParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val params: MachineWakeParams = MachineWakeParams.builder()
+
+                    \        .machineId(\"dm-3\")
+
+                    \        .build()
+
+                    \    val machine: Machine = client.machines().wake(params)
+
+                    }",
                   cli: "dedalus machines wake \\
 
                     \  --api-key 'My API Key' \\
@@ -4156,6 +4966,26 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.usage.OrgUsage
+
+                    import com.dedalus.api.models.usage.UsageRetrieveParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val orgUsage: OrgUsage = client.usage().retrieve()
+
+                    }",
                   cli: "dedalus usage retrieve \\
 
                     \  --api-key 'My API Key'",
@@ -4267,6 +5097,26 @@
                     \    }
 
                     }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.usage.MachineComputeUsage
+
+                    import com.dedalus.api.models.usage.UsageMachineComputeParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val machineComputeUsage: MachineComputeUsage = client.usage().machineCompute()
+
+                    }",
                   cli: "dedalus usage machine-compute \\
 
                     \  --api-key 'My API Key'",
@@ -4376,6 +5226,26 @@
                     \        MachineStorageUsage machineStorageUsage = client.usage().machineStorage();
 
                     \    }
+
+                    }",
+                  kotlin: "package com.dedalus.api.example
+
+
+                    import com.dedalus.api.client.DedalusClient
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient
+
+                    import com.dedalus.api.models.usage.MachineStorageUsage
+
+                    import com.dedalus.api.models.usage.UsageMachineStorageParams
+
+
+                    fun main() {
+
+                    \    val client: DedalusClient = DedalusOkHttpClient.fromEnv()
+
+
+                    \    val machineStorageUsage: MachineStorageUsage = client.usage().machineStorage()
 
                     }",
                   cli: "dedalus usage machine-storage \\

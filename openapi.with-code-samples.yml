@@ -84,6 +84,33 @@
                     \tfmt.Printf(\"%+v\\n\", page)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.MachineListPage;
+
+                    import com.dedalus.api.models.machines.MachineListParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        MachineListPage page = client.machines().list();
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines list \\
 
                     \  --api-key 'My API Key'",
@@ -194,6 +221,43 @@
                     \tfmt.Printf(\"%+v\\n\", machine.MachineID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.CreateParams;
+
+                    import com.dedalus.api.models.machines.Machine;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        CreateParams params = CreateParams.builder()
+
+                    \            .memoryMiB(0L)
+
+                    \            .storageGiB(0L)
+
+                    \            .vcpu(0.0)
+
+                    \            .build();
+
+                    \        Machine machine = client.machines().create(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines create \\
 
                     \  --api-key 'My API Key' \\
@@ -304,6 +368,39 @@
                     \tfmt.Printf(\"%+v\\n\", machine.MachineID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.Machine;
+
+                    import com.dedalus.api.models.machines.MachineDeleteParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        MachineDeleteParams params = MachineDeleteParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .build();
+
+                    \        Machine machine = client.machines().delete(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines delete \\
 
                     \  --api-key 'My API Key' \\
@@ -397,6 +494,39 @@
                     \tfmt.Printf(\"%+v\\n\", machine.MachineID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.Machine;
+
+                    import com.dedalus.api.models.machines.MachineRetrieveParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        MachineRetrieveParams params = MachineRetrieveParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .build();
+
+                    \        Machine machine = client.machines().retrieve(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -491,6 +621,43 @@
                     \tfmt.Printf(\"%+v\\n\", machine.MachineID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.Machine;
+
+                    import com.dedalus.api.models.machines.MachineUpdateParams;
+
+                    import com.dedalus.api.models.machines.UpdateParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        MachineUpdateParams params = MachineUpdateParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .updateParams(UpdateParams.builder().build())
+
+                    \            .build();
+
+                    \        Machine machine = client.machines().update(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines update \\
 
                     \  --api-key 'My API Key' \\
@@ -596,6 +763,39 @@
                     \tfmt.Printf(\"%+v\\n\", page)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.artifacts.ArtifactListPage;
+
+                    import com.dedalus.api.models.machines.artifacts.ArtifactListParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        ArtifactListParams params = ArtifactListParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .build();
+
+                    \        ArtifactListPage page = client.machines().artifacts().list(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:artifacts list \\
 
                     \  --api-key 'My API Key' \\
@@ -700,6 +900,41 @@
                     \tfmt.Printf(\"%+v\\n\", artifact.ArtifactID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.artifacts.Artifact;
+
+                    import com.dedalus.api.models.machines.artifacts.ArtifactDeleteParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        ArtifactDeleteParams params = ArtifactDeleteParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .artifactId(\"artifact_id\")
+
+                    \            .build();
+
+                    \        Artifact artifact = client.machines().artifacts().delete(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:artifacts delete \\
 
                     \  --api-key 'My API Key' \\
@@ -805,6 +1040,41 @@
                     \tfmt.Printf(\"%+v\\n\", artifact.ArtifactID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.artifacts.Artifact;
+
+                    import com.dedalus.api.models.machines.artifacts.ArtifactRetrieveParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        ArtifactRetrieveParams params = ArtifactRetrieveParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .artifactId(\"artifact_id\")
+
+                    \            .build();
+
+                    \        Artifact artifact = client.machines().artifacts().retrieve(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:artifacts retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -906,6 +1176,39 @@
                     \tfmt.Printf(\"%+v\\n\", page)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.executions.ExecutionListPage;
+
+                    import com.dedalus.api.models.machines.executions.ExecutionListParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        ExecutionListParams params = ExecutionListParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .build();
+
+                    \        ExecutionListPage page = client.machines().executions().list(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:executions list \\
 
                     \  --api-key 'My API Key' \\
@@ -1012,6 +1315,45 @@
                     \tfmt.Printf(\"%+v\\n\", execution.ExecutionID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.executions.Execution;
+
+                    import com.dedalus.api.models.machines.executions.ExecutionCreateParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        ExecutionCreateParams params = ExecutionCreateParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .executionCreateParams(ExecutionCreateParams.builder()
+
+                    \                .addCommand(\"string\")
+
+                    \                .build())
+
+                    \            .build();
+
+                    \        Execution execution = client.machines().executions().create(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:executions create \\
 
                     \  --api-key 'My API Key' \\
@@ -1130,6 +1472,41 @@
                     \tfmt.Printf(\"%+v\\n\", execution.ExecutionID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.executions.Execution;
+
+                    import com.dedalus.api.models.machines.executions.ExecutionDeleteParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        ExecutionDeleteParams params = ExecutionDeleteParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .executionId(\"execution_id\")
+
+                    \            .build();
+
+                    \        Execution execution = client.machines().executions().delete(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:executions delete \\
 
                     \  --api-key 'My API Key' \\
@@ -1235,6 +1612,41 @@
                     \tfmt.Printf(\"%+v\\n\", execution.ExecutionID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.executions.Execution;
+
+                    import com.dedalus.api.models.machines.executions.ExecutionRetrieveParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        ExecutionRetrieveParams params = ExecutionRetrieveParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .executionId(\"execution_id\")
+
+                    \            .build();
+
+                    \        Execution execution = client.machines().executions().retrieve(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:executions retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -1346,6 +1758,41 @@
                     \tfmt.Printf(\"%+v\\n\", page)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.executions.ExecutionEventsPage;
+
+                    import com.dedalus.api.models.machines.executions.ExecutionEventsParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        ExecutionEventsParams params = ExecutionEventsParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .executionId(\"execution_id\")
+
+                    \            .build();
+
+                    \        ExecutionEventsPage page = client.machines().executions().events(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:executions events \\
 
                     \  --api-key 'My API Key' \\
@@ -1452,6 +1899,41 @@
                     \tfmt.Printf(\"%+v\\n\", executionOutput.ExecutionID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.executions.ExecutionOutput;
+
+                    import com.dedalus.api.models.machines.executions.ExecutionOutputParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        ExecutionOutputParams params = ExecutionOutputParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .executionId(\"execution_id\")
+
+                    \            .build();
+
+                    \        ExecutionOutput executionOutput = client.machines().executions().output(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:executions output \\
 
                     \  --api-key 'My API Key' \\
@@ -1553,6 +2035,39 @@
                     \tfmt.Printf(\"%+v\\n\", page)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.previews.PreviewListPage;
+
+                    import com.dedalus.api.models.machines.previews.PreviewListParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        PreviewListParams params = PreviewListParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .build();
+
+                    \        PreviewListPage page = client.machines().previews().list(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:previews list \\
 
                     \  --api-key 'My API Key' \\
@@ -1653,6 +2168,45 @@
                     \tfmt.Printf(\"%+v\\n\", preview.PreviewID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.previews.Preview;
+
+                    import com.dedalus.api.models.machines.previews.PreviewCreateParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        PreviewCreateParams params = PreviewCreateParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .previewCreateParams(PreviewCreateParams.builder()
+
+                    \                .port(0L)
+
+                    \                .build())
+
+                    \            .build();
+
+                    \        Preview preview = client.machines().previews().create(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:previews create \\
 
                     \  --api-key 'My API Key' \\
@@ -1767,6 +2321,41 @@
                     \tfmt.Printf(\"%+v\\n\", preview.PreviewID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.previews.Preview;
+
+                    import com.dedalus.api.models.machines.previews.PreviewDeleteParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        PreviewDeleteParams params = PreviewDeleteParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .previewId(\"preview_id\")
+
+                    \            .build();
+
+                    \        Preview preview = client.machines().previews().delete(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:previews delete \\
 
                     \  --api-key 'My API Key' \\
@@ -1872,6 +2461,41 @@
                     \tfmt.Printf(\"%+v\\n\", preview.PreviewID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.previews.Preview;
+
+                    import com.dedalus.api.models.machines.previews.PreviewRetrieveParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        PreviewRetrieveParams params = PreviewRetrieveParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .previewId(\"preview_id\")
+
+                    \            .build();
+
+                    \        Preview preview = client.machines().previews().retrieve(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:previews retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -1968,6 +2592,39 @@
                     \tfmt.Printf(\"%+v\\n\", machine.MachineID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.Machine;
+
+                    import com.dedalus.api.models.machines.MachineSleepParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        MachineSleepParams params = MachineSleepParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .build();
+
+                    \        Machine machine = client.machines().sleep(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines sleep \\
 
                     \  --api-key 'My API Key' \\
@@ -2069,6 +2726,39 @@
                     \tfmt.Printf(\"%+v\\n\", page)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.ssh.SshListPage;
+
+                    import com.dedalus.api.models.machines.ssh.SshListParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        SshListParams params = SshListParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .build();
+
+                    \        SshListPage page = client.machines().ssh().list(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:ssh list \\
 
                     \  --api-key 'My API Key' \\
@@ -2175,6 +2865,47 @@
                     \tfmt.Printf(\"%+v\\n\", sshSession.SessionID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.ssh.SshCreateParams;
+
+                    import com.dedalus.api.models.machines.ssh.SshSession;
+
+                    import com.dedalus.api.models.machines.ssh.SshSessionCreateParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        SshCreateParams params = SshCreateParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .sshSessionCreateParams(SshSessionCreateParams.builder()
+
+                    \                .publicKey(\"public_key\")
+
+                    \                .build())
+
+                    \            .build();
+
+                    \        SshSession sshSession = client.machines().ssh().create(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:ssh create \\
 
                     \  --api-key 'My API Key' \\
@@ -2289,6 +3020,41 @@
                     \tfmt.Printf(\"%+v\\n\", sshSession.SessionID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.ssh.SshDeleteParams;
+
+                    import com.dedalus.api.models.machines.ssh.SshSession;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        SshDeleteParams params = SshDeleteParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .sessionId(\"session_id\")
+
+                    \            .build();
+
+                    \        SshSession sshSession = client.machines().ssh().delete(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:ssh delete \\
 
                     \  --api-key 'My API Key' \\
@@ -2394,6 +3160,41 @@
                     \tfmt.Printf(\"%+v\\n\", sshSession.SessionID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.ssh.SshRetrieveParams;
+
+                    import com.dedalus.api.models.machines.ssh.SshSession;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        SshRetrieveParams params = SshRetrieveParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .sessionId(\"session_id\")
+
+                    \            .build();
+
+                    \        SshSession sshSession = client.machines().ssh().retrieve(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:ssh retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -2497,6 +3298,41 @@
                     \t}
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.core.http.StreamResponse;
+
+                    import com.dedalus.api.models.machines.Machine;
+
+                    import com.dedalus.api.models.machines.MachineWatchParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        MachineWatchParams params = MachineWatchParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .build();
+
+                    \        StreamResponse<Machine> machine = client.machines().watchStreaming(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines watch \\
 
                     \  --api-key 'My API Key' \\
@@ -2596,6 +3432,39 @@
                     \tfmt.Printf(\"%+v\\n\", page)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.terminals.TerminalListPage;
+
+                    import com.dedalus.api.models.machines.terminals.TerminalListParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        TerminalListParams params = TerminalListParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .build();
+
+                    \        TerminalListPage page = client.machines().terminals().list(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:terminals list \\
 
                     \  --api-key 'My API Key' \\
@@ -2708,6 +3577,47 @@
                     \tfmt.Printf(\"%+v\\n\", terminal.TerminalID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.terminals.Terminal;
+
+                    import com.dedalus.api.models.machines.terminals.TerminalCreateParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        TerminalCreateParams params = TerminalCreateParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .terminalCreateParams(TerminalCreateParams.builder()
+
+                    \                .height(0L)
+
+                    \                .width(0L)
+
+                    \                .build())
+
+                    \            .build();
+
+                    \        Terminal terminal = client.machines().terminals().create(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:terminals create \\
 
                     \  --api-key 'My API Key' \\
@@ -2826,6 +3736,41 @@
                     \tfmt.Printf(\"%+v\\n\", terminal.TerminalID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.terminals.Terminal;
+
+                    import com.dedalus.api.models.machines.terminals.TerminalDeleteParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        TerminalDeleteParams params = TerminalDeleteParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .terminalId(\"terminal_id\")
+
+                    \            .build();
+
+                    \        Terminal terminal = client.machines().terminals().delete(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:terminals delete \\
 
                     \  --api-key 'My API Key' \\
@@ -2931,6 +3876,41 @@
                     \tfmt.Printf(\"%+v\\n\", terminal.TerminalID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.terminals.Terminal;
+
+                    import com.dedalus.api.models.machines.terminals.TerminalRetrieveParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        TerminalRetrieveParams params = TerminalRetrieveParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .terminalId(\"terminal_id\")
+
+                    \            .build();
+
+                    \        Terminal terminal = client.machines().terminals().retrieve(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines:terminals retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -3028,6 +4008,39 @@
                     \tfmt.Printf(\"%+v\\n\", machine.MachineID)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.machines.Machine;
+
+                    import com.dedalus.api.models.machines.MachineWakeParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        MachineWakeParams params = MachineWakeParams.builder()
+
+                    \            .machineId(\"dm-3\")
+
+                    \            .build();
+
+                    \        Machine machine = client.machines().wake(params);
+
+                    \    }
+
+                    }",
                   cli: "dedalus machines wake \\
 
                     \  --api-key 'My API Key' \\
@@ -3116,6 +4129,33 @@
                     \tfmt.Printf(\"%+v\\n\", orgUsage.BilledAwakeSeconds)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.usage.OrgUsage;
+
+                    import com.dedalus.api.models.usage.UsageRetrieveParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        OrgUsage orgUsage = client.usage().retrieve();
+
+                    \    }
+
+                    }",
                   cli: "dedalus usage retrieve \\
 
                     \  --api-key 'My API Key'",
@@ -3200,6 +4240,33 @@
                     \tfmt.Printf(\"%+v\\n\", machineComputeUsage.Granularity)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.usage.MachineComputeUsage;
+
+                    import com.dedalus.api.models.usage.UsageMachineComputeParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        MachineComputeUsage machineComputeUsage = client.usage().machineCompute();
+
+                    \    }
+
+                    }",
                   cli: "dedalus usage machine-compute \\
 
                     \  --api-key 'My API Key'",
@@ -3284,6 +4351,33 @@
                     \tfmt.Printf(\"%+v\\n\", machineStorageUsage.PeriodEnd)
 
                     }\n",
+                  java: "package com.dedalus.api.example;
+
+
+                    import com.dedalus.api.client.DedalusClient;
+
+                    import com.dedalus.api.client.okhttp.DedalusOkHttpClient;
+
+                    import com.dedalus.api.models.usage.MachineStorageUsage;
+
+                    import com.dedalus.api.models.usage.UsageMachineStorageParams;
+
+
+                    public final class Main {
+
+                    \    private Main() {}
+
+
+                    \    public static void main(String[] args) {
+
+                    \        DedalusClient client = DedalusOkHttpClient.fromEnv();
+
+
+                    \        MachineStorageUsage machineStorageUsage = client.usage().machineStorage();
+
+                    \    }
+
+                    }",
                   cli: "dedalus usage machine-storage \\
 
                     \  --api-key 'My API Key'",

@@ -131,6 +131,16 @@
                     \    val page: MachineListPage = client.machines().list()
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    page = dedalus.machines.list
+
+
+                    puts(page)',
                   cli: "dedalus machines list \\
 
                     \  --api-key 'My API Key'",
@@ -330,6 +340,16 @@
                     \    val machine: Machine = client.machines().create(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    machine = dedalus.machines.create(memory_mib: 0, storage_gib: 0, vcpu: 0)
+
+
+                    puts(machine)',
                   cli: "dedalus machines create \\
 
                     \  --api-key 'My API Key' \\
@@ -526,6 +546,16 @@
                     \    val machine: Machine = client.machines().delete(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    machine = dedalus.machines.delete(machine_id: "dm-3")
+
+
+                    puts(machine)',
                   cli: "dedalus machines delete \\
 
                     \  --api-key 'My API Key' \\
@@ -695,6 +725,16 @@
                     \    val machine: Machine = client.machines().retrieve(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    machine = dedalus.machines.retrieve(machine_id: "dm-3")
+
+
+                    puts(machine)',
                   cli: "dedalus machines retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -873,6 +913,16 @@
                     \    val machine: Machine = client.machines().update(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    machine = dedalus.machines.update(machine_id: "dm-3")
+
+
+                    puts(machine)',
                   cli: "dedalus machines update \\
 
                     \  --api-key 'My API Key' \\
@@ -1054,6 +1104,16 @@
                     \    val page: ArtifactListPage = client.machines().artifacts().list(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    page = dedalus.machines.artifacts.list(machine_id: "dm-3")
+
+
+                    puts(page)',
                   cli: "dedalus machines:artifacts list \\
 
                     \  --api-key 'My API Key' \\
@@ -1243,6 +1303,16 @@
                     \    val artifact: Artifact = client.machines().artifacts().delete(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    artifact = dedalus.machines.artifacts.delete(machine_id: "dm-3", artifact_id: "artifact_id")
+
+
+                    puts(artifact)',
                   cli: "dedalus machines:artifacts delete \\
 
                     \  --api-key 'My API Key' \\
@@ -1436,6 +1506,16 @@
                     \    val artifact: Artifact = client.machines().artifacts().retrieve(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    artifact = dedalus.machines.artifacts.retrieve(machine_id: "dm-3", artifact_id: "artifact_id")
+
+
+                    puts(artifact)',
                   cli: "dedalus machines:artifacts retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -1621,6 +1701,16 @@
                     \    val page: ExecutionListPage = client.machines().executions().list(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    page = dedalus.machines.executions.list(machine_id: "dm-3")
+
+
+                    puts(page)',
                   cli: "dedalus machines:executions list \\
 
                     \  --api-key 'My API Key' \\
@@ -1820,6 +1910,16 @@
                     \    val execution: Execution = client.machines().executions().create(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    execution = dedalus.machines.executions.create(machine_id: "dm-3", command: ["string"])
+
+
+                    puts(execution)',
                   cli: "dedalus machines:executions create \\
 
                     \  --api-key 'My API Key' \\
@@ -2032,6 +2132,16 @@
                     \    val execution: Execution = client.machines().executions().delete(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    execution = dedalus.machines.executions.delete(machine_id: "dm-3", execution_id: "execution_id")
+
+
+                    puts(execution)',
                   cli: "dedalus machines:executions delete \\
 
                     \  --api-key 'My API Key' \\
@@ -2225,6 +2335,16 @@
                     \    val execution: Execution = client.machines().executions().retrieve(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    execution = dedalus.machines.executions.retrieve(machine_id: "dm-3", execution_id: "execution_id")
+
+
+                    puts(execution)',
                   cli: "dedalus machines:executions retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -2424,6 +2544,16 @@
                     \    val page: ExecutionEventsPage = client.machines().executions().events(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    page = dedalus.machines.executions.events(machine_id: "dm-3", execution_id: "execution_id")
+
+
+                    puts(page)',
                   cli: "dedalus machines:executions events \\
 
                     \  --api-key 'My API Key' \\
@@ -2623,6 +2753,16 @@
                     \    val executionOutput: ExecutionOutput = client.machines().executions().output(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    execution_output = dedalus.machines.executions.output(machine_id: "dm-3", execution_id: "execution_id")
+
+
+                    puts(execution_output)',
                   cli: "dedalus machines:executions output \\
 
                     \  --api-key 'My API Key' \\
@@ -2808,6 +2948,16 @@
                     \    val page: PreviewListPage = client.machines().previews().list(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    page = dedalus.machines.previews.list(machine_id: "dm-3")
+
+
+                    puts(page)',
                   cli: "dedalus machines:previews list \\
 
                     \  --api-key 'My API Key' \\
@@ -3001,6 +3151,16 @@
                     \    val preview: Preview = client.machines().previews().create(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    preview = dedalus.machines.previews.create(machine_id: "dm-3", port: 0)
+
+
+                    puts(preview)',
                   cli: "dedalus machines:previews create \\
 
                     \  --api-key 'My API Key' \\
@@ -3203,6 +3363,16 @@
                     \    val preview: Preview = client.machines().previews().delete(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    preview = dedalus.machines.previews.delete(machine_id: "dm-3", preview_id: "preview_id")
+
+
+                    puts(preview)',
                   cli: "dedalus machines:previews delete \\
 
                     \  --api-key 'My API Key' \\
@@ -3396,6 +3566,16 @@
                     \    val preview: Preview = client.machines().previews().retrieve(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    preview = dedalus.machines.previews.retrieve(machine_id: "dm-3", preview_id: "preview_id")
+
+
+                    puts(preview)',
                   cli: "dedalus machines:previews retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -3576,6 +3756,16 @@
                     \    val machine: Machine = client.machines().sleep(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    machine = dedalus.machines.sleep_(machine_id: "dm-3")
+
+
+                    puts(machine)',
                   cli: "dedalus machines sleep \\
 
                     \  --api-key 'My API Key' \\
@@ -3753,6 +3943,16 @@
                     \    val page: SshListPage = client.machines().ssh().list(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    page = dedalus.machines.ssh.list(machine_id: "dm-3")
+
+
+                    puts(page)',
                   cli: "dedalus machines:ssh list \\
 
                     \  --api-key 'My API Key' \\
@@ -3956,6 +4156,16 @@
                     \    val sshSession: SshSession = client.machines().ssh().create(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    ssh_session = dedalus.machines.ssh.create(machine_id: "dm-3", public_key: "public_key")
+
+
+                    puts(ssh_session)',
                   cli: "dedalus machines:ssh create \\
 
                     \  --api-key 'My API Key' \\
@@ -4158,6 +4368,16 @@
                     \    val sshSession: SshSession = client.machines().ssh().delete(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    ssh_session = dedalus.machines.ssh.delete(machine_id: "dm-3", session_id: "session_id")
+
+
+                    puts(ssh_session)',
                   cli: "dedalus machines:ssh delete \\
 
                     \  --api-key 'My API Key' \\
@@ -4351,6 +4571,16 @@
                     \    val sshSession: SshSession = client.machines().ssh().retrieve(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    ssh_session = dedalus.machines.ssh.retrieve(machine_id: "dm-3", session_id: "session_id")
+
+
+                    puts(ssh_session)',
                   cli: "dedalus machines:ssh retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -4542,6 +4772,16 @@
                     \    val machine: StreamResponse<Machine> = client.machines().watchStreaming(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    machine = dedalus.machines.watch(machine_id: "dm-3")
+
+
+                    puts(machine)',
                   cli: "dedalus machines watch \\
 
                     \  --api-key 'My API Key' \\
@@ -4720,6 +4960,16 @@
                     \    val page: TerminalListPage = client.machines().terminals().list(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    page = dedalus.machines.terminals.list(machine_id: "dm-3")
+
+
+                    puts(page)',
                   cli: "dedalus machines:terminals list \\
 
                     \  --api-key 'My API Key' \\
@@ -4929,6 +5179,16 @@
                     \    val terminal: Terminal = client.machines().terminals().create(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    terminal = dedalus.machines.terminals.create(machine_id: "dm-3", height: 0, width: 0)
+
+
+                    puts(terminal)',
                   cli: "dedalus machines:terminals create \\
 
                     \  --api-key 'My API Key' \\
@@ -5137,6 +5397,16 @@
                     \    val terminal: Terminal = client.machines().terminals().delete(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    terminal = dedalus.machines.terminals.delete(machine_id: "dm-3", terminal_id: "terminal_id")
+
+
+                    puts(terminal)',
                   cli: "dedalus machines:terminals delete \\
 
                     \  --api-key 'My API Key' \\
@@ -5330,6 +5600,16 @@
                     \    val terminal: Terminal = client.machines().terminals().retrieve(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    terminal = dedalus.machines.terminals.retrieve(machine_id: "dm-3", terminal_id: "terminal_id")
+
+
+                    puts(terminal)',
                   cli: "dedalus machines:terminals retrieve \\
 
                     \  --api-key 'My API Key' \\
@@ -5511,6 +5791,16 @@
                     \    val machine: Machine = client.machines().wake(params)
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    machine = dedalus.machines.wake(machine_id: "dm-3")
+
+
+                    puts(machine)',
                   cli: "dedalus machines wake \\
 
                     \  --api-key 'My API Key' \\
@@ -5663,6 +5953,16 @@
                     \    val orgUsage: OrgUsage = client.usage().retrieve()
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    org_usage = dedalus.usage.retrieve
+
+
+                    puts(org_usage)',
                   cli: "dedalus usage retrieve \\
 
                     \  --api-key 'My API Key'",
@@ -5811,6 +6111,16 @@
                     \    val machineComputeUsage: MachineComputeUsage = client.usage().machineCompute()
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    machine_compute_usage = dedalus.usage.machine_compute
+
+
+                    puts(machine_compute_usage)',
                   cli: "dedalus usage machine-compute \\
 
                     \  --api-key 'My API Key'",
@@ -5959,6 +6269,16 @@
                     \    val machineStorageUsage: MachineStorageUsage = client.usage().machineStorage()
 
                     }",
+                  ruby: 'require "dedalus"
+
+
+                    dedalus = Dedalus::Client.new(api_key: "My API Key")
+
+
+                    machine_storage_usage = dedalus.usage.machine_storage
+
+
+                    puts(machine_storage_usage)',
                   cli: "dedalus usage machine-storage \\
 
                     \  --api-key 'My API Key'",

@@ -134,6 +134,28 @@
                   cli: "dedalus machines list \\
 
                     \  --api-key 'My API Key'",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines;
+
+
+                    DedalusClient client = new();
+
+
+                    MachineListParams parameters = new();
+
+
+                    var page = await client.Machines.List(parameters);
+
+                    await foreach (var item in page.Paginate())
+
+                    {
+
+                    \    Console.WriteLine(item);
+
+                    }",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -317,6 +339,33 @@
                     \  --storage-gib 0 \\
 
                     \  --vcpu 0",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines;
+
+
+                    DedalusClient client = new();
+
+
+                    MachineCreateParams parameters = new()
+
+                    {
+
+                    \    MemoryMiB = 0,
+
+                    \    StorageGiB = 0,
+
+                    \    Vcpu = 0,
+
+                    };
+
+
+                    var machine = await client.Machines.Create(parameters);
+
+
+                    Console.WriteLine(machine);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines \\
 
                     \    -H 'Content-Type: application/json' \\
@@ -482,6 +531,23 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  csharp: 'using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines;
+
+
+                    DedalusClient client = new();
+
+
+                    MachineDeleteParams parameters = new() { MachineID = "dm-3" };
+
+
+                    var machine = await client.Machines.Delete(parameters);
+
+
+                    Console.WriteLine(machine);',
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID \\
 
                     \    -X DELETE \\
@@ -634,6 +700,23 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  csharp: 'using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines;
+
+
+                    DedalusClient client = new();
+
+
+                    MachineRetrieveParams parameters = new() { MachineID = "dm-3" };
+
+
+                    var machine = await client.Machines.Retrieve(parameters);
+
+
+                    Console.WriteLine(machine);',
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -795,6 +878,23 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  csharp: 'using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines;
+
+
+                    DedalusClient client = new();
+
+
+                    MachineUpdateParams parameters = new() { MachineID = "dm-3" };
+
+
+                    var machine = await client.Machines.Update(parameters);
+
+
+                    Console.WriteLine(machine);',
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID \\
 
                     \    -X PATCH \\
@@ -959,6 +1059,28 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Artifacts;
+
+
+                    DedalusClient client = new();
+
+
+                    ArtifactListParams parameters = new() { MachineID = \"dm-3\" };
+
+
+                    var page = await client.Machines.Artifacts.List(parameters);
+
+                    await foreach (var item in page.Paginate())
+
+                    {
+
+                    \    Console.WriteLine(item);
+
+                    }",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/artifacts \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -1128,6 +1250,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --artifact-id artifact_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Artifacts;
+
+
+                    DedalusClient client = new();
+
+
+                    ArtifactDeleteParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    ArtifactID = \"artifact_id\",
+
+                    };
+
+
+                    var artifact = await client.Machines.Artifacts.Delete(parameters);
+
+
+                    Console.WriteLine(artifact);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/artifacts/$ARTIFACT_ID \\
 
                     \    -X DELETE \\
@@ -1296,6 +1443,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --artifact-id artifact_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Artifacts;
+
+
+                    DedalusClient client = new();
+
+
+                    ArtifactRetrieveParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    ArtifactID = \"artifact_id\",
+
+                    };
+
+
+                    var artifact = await client.Machines.Artifacts.Retrieve(parameters);
+
+
+                    Console.WriteLine(artifact);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/artifacts/$ARTIFACT_ID \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -1454,6 +1626,28 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Executions;
+
+
+                    DedalusClient client = new();
+
+
+                    ExecutionListParams parameters = new() { MachineID = \"dm-3\" };
+
+
+                    var page = await client.Machines.Executions.List(parameters);
+
+                    await foreach (var item in page.Paginate())
+
+                    {
+
+                    \    Console.WriteLine(item);
+
+                    }",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/executions \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -1633,6 +1827,37 @@
                     \  --machine-id dm-3 \\
 
                     \  --command string",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Executions;
+
+
+                    DedalusClient client = new();
+
+
+                    ExecutionCreateParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    Command =
+
+                    \    [
+
+                    \        \"string\"
+
+                    \    ],
+
+                    };
+
+
+                    var execution = await client.Machines.Executions.Create(parameters);
+
+
+                    Console.WriteLine(execution);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/executions \\
 
                     \    -H 'Content-Type: application/json' \\
@@ -1814,6 +2039,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --execution-id execution_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Executions;
+
+
+                    DedalusClient client = new();
+
+
+                    ExecutionDeleteParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    ExecutionID = \"execution_id\",
+
+                    };
+
+
+                    var execution = await client.Machines.Executions.Delete(parameters);
+
+
+                    Console.WriteLine(execution);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/executions/$EXECUTION_ID \\
 
                     \    -X DELETE \\
@@ -1982,6 +2232,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --execution-id execution_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Executions;
+
+
+                    DedalusClient client = new();
+
+
+                    ExecutionRetrieveParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    ExecutionID = \"execution_id\",
+
+                    };
+
+
+                    var execution = await client.Machines.Executions.Retrieve(parameters);
+
+
+                    Console.WriteLine(execution);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/executions/$EXECUTION_ID \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -2156,6 +2431,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --execution-id execution_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Executions;
+
+
+                    DedalusClient client = new();
+
+
+                    ExecutionEventsParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    ExecutionID = \"execution_id\",
+
+                    };
+
+
+                    var page = await client.Machines.Executions.Events(parameters);
+
+                    await foreach (var item in page.Paginate())
+
+                    {
+
+                    \    Console.WriteLine(item);
+
+                    }",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/executions/$EXECUTION_ID/events \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -2325,6 +2630,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --execution-id execution_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Executions;
+
+
+                    DedalusClient client = new();
+
+
+                    ExecutionOutputParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    ExecutionID = \"execution_id\",
+
+                    };
+
+
+                    var executionOutput = await client.Machines.Executions.Output(parameters);
+
+
+                    Console.WriteLine(executionOutput);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/executions/$EXECUTION_ID/output \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -2483,6 +2813,28 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Previews;
+
+
+                    DedalusClient client = new();
+
+
+                    PreviewListParams parameters = new() { MachineID = \"dm-3\" };
+
+
+                    var page = await client.Machines.Previews.List(parameters);
+
+                    await foreach (var item in page.Paginate())
+
+                    {
+
+                    \    Console.WriteLine(item);
+
+                    }",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/previews \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -2656,6 +3008,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --port 0",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Previews;
+
+
+                    DedalusClient client = new();
+
+
+                    PreviewCreateParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    Port = 0,
+
+                    };
+
+
+                    var preview = await client.Machines.Previews.Create(parameters);
+
+
+                    Console.WriteLine(preview);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/previews \\
 
                     \    -H 'Content-Type: application/json' \\
@@ -2833,6 +3210,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --preview-id preview_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Previews;
+
+
+                    DedalusClient client = new();
+
+
+                    PreviewDeleteParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    PreviewID = \"preview_id\",
+
+                    };
+
+
+                    var preview = await client.Machines.Previews.Delete(parameters);
+
+
+                    Console.WriteLine(preview);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/previews/$PREVIEW_ID \\
 
                     \    -X DELETE \\
@@ -3001,6 +3403,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --preview-id preview_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Previews;
+
+
+                    DedalusClient client = new();
+
+
+                    PreviewRetrieveParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    PreviewID = \"preview_id\",
+
+                    };
+
+
+                    var preview = await client.Machines.Previews.Retrieve(parameters);
+
+
+                    Console.WriteLine(preview);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/previews/$PREVIEW_ID \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -3154,6 +3581,23 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  csharp: 'using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines;
+
+
+                    DedalusClient client = new();
+
+
+                    MachineSleepParams parameters = new() { MachineID = "dm-3" };
+
+
+                    var machine = await client.Machines.Sleep(parameters);
+
+
+                    Console.WriteLine(machine);',
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/sleep \\
 
                     \    -X POST \\
@@ -3314,6 +3758,28 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Ssh;
+
+
+                    DedalusClient client = new();
+
+
+                    SshListParams parameters = new() { MachineID = \"dm-3\" };
+
+
+                    var page = await client.Machines.Ssh.List(parameters);
+
+                    await foreach (var item in page.Paginate())
+
+                    {
+
+                    \    Console.WriteLine(item);
+
+                    }",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/ssh \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -3497,6 +3963,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --public-key public_key",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Ssh;
+
+
+                    DedalusClient client = new();
+
+
+                    SshCreateParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    PublicKey = \"public_key\",
+
+                    };
+
+
+                    var sshSession = await client.Machines.Ssh.Create(parameters);
+
+
+                    Console.WriteLine(sshSession);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/ssh \\
 
                     \    -H 'Content-Type: application/json' \\
@@ -3674,6 +4165,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --session-id session_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Ssh;
+
+
+                    DedalusClient client = new();
+
+
+                    SshDeleteParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    SessionID = \"session_id\",
+
+                    };
+
+
+                    var sshSession = await client.Machines.Ssh.Delete(parameters);
+
+
+                    Console.WriteLine(sshSession);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/ssh/$SESSION_ID \\
 
                     \    -X DELETE \\
@@ -3842,6 +4358,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --session-id session_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Ssh;
+
+
+                    DedalusClient client = new();
+
+
+                    SshRetrieveParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    SessionID = \"session_id\",
+
+                    };
+
+
+                    var sshSession = await client.Machines.Ssh.Retrieve(parameters);
+
+
+                    Console.WriteLine(sshSession);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/ssh/$SESSION_ID \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -4006,6 +4547,26 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines;
+
+
+                    DedalusClient client = new();
+
+
+                    MachineWatchParams parameters = new() { MachineID = \"dm-3\" };
+
+
+                    await foreach (var machine in client.Machines.WatchStreaming(parameters))
+
+                    {
+
+                    \    Console.WriteLine(machine);
+
+                    }",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/status/stream \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -4164,6 +4725,28 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Terminals;
+
+
+                    DedalusClient client = new();
+
+
+                    TerminalListParams parameters = new() { MachineID = \"dm-3\" };
+
+
+                    var page = await client.Machines.Terminals.List(parameters);
+
+                    await foreach (var item in page.Paginate())
+
+                    {
+
+                    \    Console.WriteLine(item);
+
+                    }",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/terminals \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -4355,6 +4938,33 @@
                     \  --height 0 \\
 
                     \  --width 0",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Terminals;
+
+
+                    DedalusClient client = new();
+
+
+                    TerminalCreateParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    Height = 0,
+
+                    \    Width = 0,
+
+                    };
+
+
+                    var terminal = await client.Machines.Terminals.Create(parameters);
+
+
+                    Console.WriteLine(terminal);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/terminals \\
 
                     \    -H 'Content-Type: application/json' \\
@@ -4534,6 +5144,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --terminal-id terminal_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Terminals;
+
+
+                    DedalusClient client = new();
+
+
+                    TerminalDeleteParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    TerminalID = \"terminal_id\",
+
+                    };
+
+
+                    var terminal = await client.Machines.Terminals.Delete(parameters);
+
+
+                    Console.WriteLine(terminal);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/terminals/$TERMINAL_ID \\
 
                     \    -X DELETE \\
@@ -4702,6 +5337,31 @@
                     \  --machine-id dm-3 \\
 
                     \  --terminal-id terminal_id",
+                  csharp: "using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines.Terminals;
+
+
+                    DedalusClient client = new();
+
+
+                    TerminalRetrieveParams parameters = new()
+
+                    {
+
+                    \    MachineID = \"dm-3\",
+
+                    \    TerminalID = \"terminal_id\",
+
+                    };
+
+
+                    var terminal = await client.Machines.Terminals.Retrieve(parameters);
+
+
+                    Console.WriteLine(terminal);",
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/terminals/$TERMINAL_ID \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -4856,6 +5516,23 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  csharp: 'using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Machines;
+
+
+                    DedalusClient client = new();
+
+
+                    MachineWakeParams parameters = new() { MachineID = "dm-3" };
+
+
+                    var machine = await client.Machines.Wake(parameters);
+
+
+                    Console.WriteLine(machine);',
                   curl: "curl https://dcs.dedaluslabs.ai/v1/machines/$MACHINE_ID/wake \\
 
                     \    -X POST \\
@@ -4989,6 +5666,23 @@
                   cli: "dedalus usage retrieve \\
 
                     \  --api-key 'My API Key'",
+                  csharp: using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Usage;
+
+
+                    DedalusClient client = new();
+
+
+                    UsageRetrieveParams parameters = new();
+
+
+                    var orgUsage = await client.Usage.Retrieve(parameters);
+
+
+                    Console.WriteLine(orgUsage);,
                   curl: "curl https://dcs.dedaluslabs.ai/v1/usage \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -5120,6 +5814,23 @@
                   cli: "dedalus usage machine-compute \\
 
                     \  --api-key 'My API Key'",
+                  csharp: using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Usage;
+
+
+                    DedalusClient client = new();
+
+
+                    UsageMachineComputeParams parameters = new();
+
+
+                    var machineComputeUsage = await client.Usage.MachineCompute(parameters);
+
+
+                    Console.WriteLine(machineComputeUsage);,
                   curl: "curl https://dcs.dedaluslabs.ai/v1/usage/machines/compute \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""
@@ -5251,6 +5962,23 @@
                   cli: "dedalus usage machine-storage \\
 
                     \  --api-key 'My API Key'",
+                  csharp: using System;
+
+                    using Dedalus;
+
+                    using Dedalus.Models.Usage;
+
+
+                    DedalusClient client = new();
+
+
+                    UsageMachineStorageParams parameters = new();
+
+
+                    var machineStorageUsage = await client.Usage.MachineStorage(parameters);
+
+
+                    Console.WriteLine(machineStorageUsage);,
                   curl: "curl https://dcs.dedaluslabs.ai/v1/usage/machines/storage \\
 
                     \    -H \"Authorization: Bearer $DEDALUS_API_KEY\""

@@ -19,6 +19,7 @@ Our official clients are generated from this spec:
 - [dedalus-python](https://github.com/dedalus-labs/dedalus-python) (Python)
 - [dedalus-go](https://github.com/dedalus-labs/dedalus-go) (Go)
 - [dedalus-java](https://github.com/dedalus-labs/dedalus-java) (Java)
+- [dedalus-kotlin](https://github.com/dedalus-labs/dedalus-kotlin) (Kotlin)
 - [dedalus-ruby](https://github.com/dedalus-labs/dedalus-ruby) (Ruby)
 - [terraform-provider-dedalus](https://github.com/dedalus-labs/terraform-provider-dedalus) (Terraform)
 - [dedalus-cli](https://github.com/dedalus-labs/dedalus-cli) (CLI)

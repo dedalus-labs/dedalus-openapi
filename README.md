@@ -24,3 +24,4 @@ Our official clients are generated from this spec:
 - [terraform-provider-dedalus](https://github.com/dedalus-labs/terraform-provider-dedalus) (Terraform)
 - [dedalus-cli](https://github.com/dedalus-labs/dedalus-cli) (CLI)
 - [dedalus-php](https://github.com/dedalus-labs/dedalus-php) (PHP)
+- [dedalus-csharp](https://github.com/dedalus-labs/dedalus-csharp) (C#)

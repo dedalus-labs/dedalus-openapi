@@ -144,6 +144,32 @@
                   cli: "dedalus machines list \\
 
                     \  --api-key 'My API Key'",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $page = $client->machines->list(cursor: 'cursor', limit: 0);
+
+
+                    \  var_dump($page);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -359,6 +385,36 @@
                     \  --storage-gib 0 \\
 
                     \  --vcpu 0",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $machine = $client->machines->create(
+
+                    \    memoryMiB: 0, storageGiB: 0, vcpu: 0, autosleep: 'autosleep'
+
+                    \  );
+
+
+                    \  var_dump($machine);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -561,6 +617,32 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $machine = $client->machines->delete(machineID: 'dm-3');
+
+
+                    \  var_dump($machine);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: 'using System;
 
                     using Dedalus;
@@ -740,6 +822,32 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $machine = $client->machines->retrieve(machineID: 'dm-3');
+
+
+                    \  var_dump($machine);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: 'using System;
 
                     using Dedalus;
@@ -928,6 +1036,44 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $machine = $client->machines->update(
+
+                    \    machineID: 'dm-3',
+
+                    \    autosleep: 'autosleep',
+
+                    \    memoryMiB: 0,
+
+                    \    storageGiB: 0,
+
+                    \    vcpu: 0,
+
+                    \  );
+
+
+                    \  var_dump($machine);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: 'using System;
 
                     using Dedalus;
@@ -1119,6 +1265,36 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $page = $client->machines->artifacts->list(
+
+                    \    machineID: 'dm-3', cursor: 'cursor', limit: 0
+
+                    \  );
+
+
+                    \  var_dump($page);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -1320,6 +1496,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --artifact-id artifact_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $artifact = $client->machines->artifacts->delete(
+
+                    \    machineID: 'dm-3', artifactID: 'artifact_id'
+
+                    \  );
+
+
+                    \  var_dump($artifact);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -1523,6 +1729,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --artifact-id artifact_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $artifact = $client->machines->artifacts->retrieve(
+
+                    \    machineID: 'dm-3', artifactID: 'artifact_id'
+
+                    \  );
+
+
+                    \  var_dump($artifact);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -1716,6 +1952,36 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $page = $client->machines->executions->list(
+
+                    \    machineID: 'dm-3', cursor: 'cursor', limit: 0
+
+                    \  );
+
+
+                    \  var_dump($page);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -1927,6 +2193,46 @@
                     \  --machine-id dm-3 \\
 
                     \  --command string",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $execution = $client->machines->executions->create(
+
+                    \    machineID: 'dm-3',
+
+                    \    command: ['string'],
+
+                    \    cwd: 'cwd',
+
+                    \    env: ['foo' => 'string'],
+
+                    \    stdin: 'stdin',
+
+                    \    timeoutMs: 0,
+
+                    \  );
+
+
+                    \  var_dump($execution);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -2149,6 +2455,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --execution-id execution_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $execution = $client->machines->executions->delete(
+
+                    \    machineID: 'dm-3', executionID: 'execution_id'
+
+                    \  );
+
+
+                    \  var_dump($execution);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -2352,6 +2688,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --execution-id execution_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $execution = $client->machines->executions->retrieve(
+
+                    \    machineID: 'dm-3', executionID: 'execution_id'
+
+                    \  );
+
+
+                    \  var_dump($execution);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -2561,6 +2927,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --execution-id execution_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $page = $client->machines->executions->events(
+
+                    \    machineID: 'dm-3', executionID: 'execution_id', cursor: 'cursor', limit: 0
+
+                    \  );
+
+
+                    \  var_dump($page);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -2770,6 +3166,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --execution-id execution_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $executionOutput = $client->machines->executions->output(
+
+                    \    machineID: 'dm-3', executionID: 'execution_id'
+
+                    \  );
+
+
+                    \  var_dump($executionOutput);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -2963,6 +3389,36 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $page = $client->machines->previews->list(
+
+                    \    machineID: 'dm-3', cursor: 'cursor', limit: 0
+
+                    \  );
+
+
+                    \  var_dump($page);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -3168,6 +3624,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --port 0",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $preview = $client->machines->previews->create(
+
+                    \    machineID: 'dm-3', port: 0, protocol: 'http', visibility: 'public'
+
+                    \  );
+
+
+                    \  var_dump($preview);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -3380,6 +3866,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --preview-id preview_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $preview = $client->machines->previews->delete(
+
+                    \    machineID: 'dm-3', previewID: 'preview_id'
+
+                    \  );
+
+
+                    \  var_dump($preview);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -3583,6 +4099,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --preview-id preview_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $preview = $client->machines->previews->retrieve(
+
+                    \    machineID: 'dm-3', previewID: 'preview_id'
+
+                    \  );
+
+
+                    \  var_dump($preview);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -3771,6 +4317,32 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $machine = $client->machines->sleep(machineID: 'dm-3');
+
+
+                    \  var_dump($machine);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: 'using System;
 
                     using Dedalus;
@@ -3958,6 +4530,36 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $page = $client->machines->ssh->list(
+
+                    \    machineID: 'dm-3', cursor: 'cursor', limit: 0
+
+                    \  );
+
+
+                    \  var_dump($page);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -4173,6 +4775,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --public-key public_key",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $sshSession = $client->machines->ssh->create(
+
+                    \    machineID: 'dm-3', publicKey: 'public_key'
+
+                    \  );
+
+
+                    \  var_dump($sshSession);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -4385,6 +5017,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --session-id session_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $sshSession = $client->machines->ssh->delete(
+
+                    \    machineID: 'dm-3', sessionID: 'session_id'
+
+                    \  );
+
+
+                    \  var_dump($sshSession);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -4588,6 +5250,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --session-id session_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $sshSession = $client->machines->ssh->retrieve(
+
+                    \    machineID: 'dm-3', sessionID: 'session_id'
+
+                    \  );
+
+
+                    \  var_dump($sshSession);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -4787,6 +5479,36 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $machine = $client->machines->watchStream(
+
+                    \    machineID: 'dm-3', lastEventID: 'Last-Event-ID'
+
+                    \  );
+
+
+                    \  var_dump($machine);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -4975,6 +5697,36 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $page = $client->machines->terminals->list(
+
+                    \    machineID: 'dm-3', cursor: 'cursor', limit: 0
+
+                    \  );
+
+
+                    \  var_dump($page);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -5198,6 +5950,46 @@
                     \  --height 0 \\
 
                     \  --width 0",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $terminal = $client->machines->terminals->create(
+
+                    \    machineID: 'dm-3',
+
+                    \    height: 0,
+
+                    \    width: 0,
+
+                    \    cwd: 'cwd',
+
+                    \    env: ['foo' => 'string'],
+
+                    \    shell: 'shell',
+
+                    \  );
+
+
+                    \  var_dump($terminal);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -5414,6 +6206,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --terminal-id terminal_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $terminal = $client->machines->terminals->delete(
+
+                    \    machineID: 'dm-3', terminalID: 'terminal_id'
+
+                    \  );
+
+
+                    \  var_dump($terminal);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -5617,6 +6439,36 @@
                     \  --machine-id dm-3 \\
 
                     \  --terminal-id terminal_id",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $terminal = $client->machines->terminals->retrieve(
+
+                    \    machineID: 'dm-3', terminalID: 'terminal_id'
+
+                    \  );
+
+
+                    \  var_dump($terminal);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: "using System;
 
                     using Dedalus;
@@ -5806,6 +6658,32 @@
                     \  --api-key 'My API Key' \\
 
                     \  --machine-id dm-3",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $machine = $client->machines->wake(machineID: 'dm-3');
+
+
+                    \  var_dump($machine);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: 'using System;
 
                     using Dedalus;
@@ -5966,6 +6844,32 @@
                   cli: "dedalus usage retrieve \\
 
                     \  --api-key 'My API Key'",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $orgUsage = $client->usage->retrieve(periodStart: 'period_start');
+
+
+                    \  var_dump($orgUsage);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: using System;
 
                     using Dedalus;
@@ -6124,6 +7028,42 @@
                   cli: "dedalus usage machine-compute \\
 
                     \  --api-key 'My API Key'",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $machineComputeUsage = $client->usage->machineCompute(
+
+                    \    granularity: 'granularity',
+
+                    \    machineID: 'machine_id',
+
+                    \    periodEnd: 'period_end',
+
+                    \    periodStart: 'period_start',
+
+                    \  );
+
+
+                    \  var_dump($machineComputeUsage);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: using System;
 
                     using Dedalus;
@@ -6282,6 +7222,40 @@
                   cli: "dedalus usage machine-storage \\
 
                     \  --api-key 'My API Key'",
+                  php: "<?php
+
+
+                    require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+
+                    use Dedalus\\Client;
+
+                    use Dedalus\\Core\\Exceptions\\APIException;
+
+
+                    $client = new Client(apiKey: getenv('DEDALUS_API_KEY') ?: 'My API Key');
+
+
+                    try {
+
+                    \  $machineStorageUsage = $client->usage->machineStorage(
+
+                    \    machineID: 'machine_id',
+
+                    \    periodEnd: 'period_end',
+
+                    \    periodStart: 'period_start',
+
+                    \  );
+
+
+                    \  var_dump($machineStorageUsage);
+
+                    } catch (APIException $e) {
+
+                    \  echo $e->getMessage();
+
+                    }",
                   csharp: using System;
 
                     using Dedalus;
